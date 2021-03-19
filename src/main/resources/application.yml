@@ -1,0 +1,24 @@
+spring:
+  bot:
+    plugin-list: # 配置插件列表（有序），如果插件返回0，继续执行剩余插件，如果插件返回1，终止剩余插件执行
+      - com.wisdom.xifeng.plugin.XFPlugin
+      - com.wisdom.xifeng.plugin.SetXFPlugin
+      - com.wisdom.xifeng.plugin.OtherPlugin
+      - com.wisdom.xifeng.plugin.HelpPlugin
+      - com.wisdom.xifeng.plugin.GroupPlugin
+      - com.wisdom.xifeng.plugin.DicePlugin
+      - com.wisdom.xifeng.plugin.LogPlugin # 日志插件
+
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://47.113.231.84:3306/wisdombot?useSSL=false
+    username: root
+    password: 140610
+  thymeleaf:
+    cache: false
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.wisdom.xifeng.entity
+server:
+  port: 8888
