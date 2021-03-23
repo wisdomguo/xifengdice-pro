@@ -53,7 +53,103 @@ public class OtherPlugin extends BotPlugin {
     private QQGroupSerivce qqGroupSerivce;
 
     private Map<String, Integer> jrrp = new HashMap();
-    private Map<String, Integer> tarotlist = new HashMap();
+    private Map<String, Integer> tarotList = new HashMap();
+    private Map<String, Integer> magicList = new HashMap();
+
+    private String getTarot(Integer id){
+        switch(id){
+            case 0:
+                return "【0】愚者-正置";
+            case 1:
+                return "【I】魔术师-正置";
+            case 2:
+                return "【II】女祭司-正置";
+            case 3:
+                return "【III】女皇-正置";
+            case 4:
+                return "【IV】皇帝-正置";
+            case 5:
+                return "【V】教皇-正置";
+            case 6:
+                return "【VI】恋人-正置";
+            case 7:
+                return "【VII】战车-正置";
+            case 8:
+                return "【VIII】力量-正置";
+            case 9:
+                return "【IX】隐者-正置";
+            case 10:
+                return "【X】命运之轮-正置";
+            case 11:
+                return "【XI】正义-正置";
+            case 12:
+                return "【XII】倒吊人-正置";
+            case 13:
+                return "【XIII】死神-正置";
+            case 14:
+                return "【XIV】节制-正置";
+            case 15:
+                return "【XV】恶魔-正置";
+            case 16:
+                return "【XVI】塔-正置";
+            case 17:
+                return "【XVII】星星-正置";
+            case 18:
+                return "【XVIII】月亮-正置";
+            case 19:
+                return "【XIX】太阳-正置";
+            case 20:
+                return "【XX】审判-正置";
+            case 21:
+                return "【XXI】世界-正置";
+            case 22:
+                return "【0】愚者-倒置";
+            case 23:
+                return "【I】魔术师-倒置";
+            case 24:
+                return "【II】女祭司-倒置";
+            case 25:
+                return "【III】女皇-倒置";
+            case 26:
+                return "【IV】皇帝-倒置";
+            case 27:
+                return "【V】教皇-倒置";
+            case 28:
+                return "【VI】恋人-倒置";
+            case 29:
+                return "【VII】战车-倒置";
+            case 30:
+                return "【VIII】力量-倒置";
+            case 31:
+                return "【IX】隐者-倒置";
+            case 32:
+                return "【X】命运之轮-倒置";
+            case 33:
+                return "【XI】正义-倒置";
+            case 34:
+                return "【XII】倒吊人-倒置";
+            case 35:
+                return "【XIII】死神-倒置";
+            case 36:
+                return "【XIV】节制-倒置";
+            case 37:
+                return "【XV】恶魔-倒置";
+            case 38:
+                return "【XVI】塔-倒置";
+            case 39:
+                return "【XVII】星星-倒置";
+            case 40:
+                return "【XVIII】月亮-倒置";
+            case 41:
+                return "【XIX】太阳-倒置";
+            case 42:
+                return "【XX】审判-倒置";
+            case 43:
+                return "【XXI】审判-倒置";
+            default:
+                return "";
+        }
+    }
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
     public void captainClub() {
@@ -65,7 +161,8 @@ public class OtherPlugin extends BotPlugin {
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
     public void jrrpClear() {
         jrrp = new HashMap<>();
-        tarotlist = new HashMap<>();
+        tarotList = new HashMap<>();
+        magicList = new HashMap<>();
     }
 
     /**
@@ -134,6 +231,36 @@ public class OtherPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
+        if (msg.indexOf(".magic xf") != -1) {
+
+            String key = String.valueOf(userId);
+
+            if (magicList.get(key) == null && jrrp.get(key)<50) {
+                Random random = new Random();
+                int rp = random.nextInt(100) + 1;
+                StringBuffer rpStr = new StringBuffer("今日人品值更新为：" );
+                if (rp == 100) {
+                    rpStr.append(rp+"，运气这么好，难道今天是你的幸运日？");
+                } else if (rp >= 75) {
+                    rpStr.append(rp+"，运气还不错，祝你今天事事顺心！");
+                } else if (rp >= 50) {
+                    rpStr.append(rp+"，运气还可以，今天也会是平稳的一天！");
+                } else {
+                    rp=random.nextInt(10)+50;
+                    rpStr.append(rp+"，运气还可以，今天也会是平稳的一天！");
+                }
+                magicList.put(key, rp);
+                jrrp.put(key, rp);
+                cq.sendGroupMsg(groupId, "命运之神的骰子重新转动中...", false);
+                Thread.sleep(1000);
+                cq.sendGroupMsg(groupId, nickname+(rpStr.toString()), false);
+            } else {
+                cq.sendGroupMsg(groupId, nickname+"您现在还不能使用过惜风的魔法哦！", false);
+            }
+
+            return MESSAGE_IGNORE;
+        }
+
         if (msg.indexOf(".tarot") != -1) {
             Random random = new Random();
             int tarot = random.nextInt(22);
@@ -141,12 +268,18 @@ public class OtherPlugin extends BotPlugin {
             if (tarot < 10) {
                 tarotStr = "0" + tarotStr;
             }
+            int PN = random.nextInt(1);
+            if(PN==1){
+                tarot+=22;
+            }
             String key = String.valueOf(userId);
-            if (tarotlist.get(key) == null) {
-                tarotlist.put(key, tarot);
+            if (tarotList.get(key) == null) {
+                tarotList.put(key, tarot);
+                cq.sendGroupMsg(groupId, nickname+"您抽取到的为:"+getTarot(tarotList.get(key))+"", false);
                 cq.sendGroupMsg(groupId, Msg.builder().image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
+
             } else {
-                cq.sendGroupMsg(groupId, nickname+"您今天已进行抽取过塔罗，明天再来吧！", false);
+                cq.sendGroupMsg(groupId, nickname+"您今天已进行抽取过塔罗:\n"+getTarot(tarotList.get(key))+"\n明天再来吧！", false);
             }
 
             return MESSAGE_IGNORE;
