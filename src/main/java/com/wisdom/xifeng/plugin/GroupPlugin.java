@@ -8,6 +8,7 @@ import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotApi;
+import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -64,7 +65,7 @@ public class GroupPlugin extends BotPlugin {
             // 不执行下一个插件
             return MESSAGE_IGNORE;
         }
-        if (msg.startsWith(".jy") && userId == 1969077760L) {
+        if (msg.startsWith(".speech") && userId == 1969077760L) {
             try {
                 String[] msgs = msg.trim().split(" ");
                 cq.setGroupBan(Long.valueOf(msgs[1]), Long.valueOf(msgs[2]), Integer.valueOf(msgs[3]));
@@ -75,7 +76,7 @@ public class GroupPlugin extends BotPlugin {
             // 不执行下一个插件
             return MESSAGE_IGNORE;
         }
-        if (msg.startsWith(".jj") && userId == 1969077760L) {
+        if (msg.startsWith(".remove") && userId == 1969077760L) {
             try {
                 String[] msgs = msg.trim().split(" ");
                 cq.setGroupBan(Long.valueOf(msgs[1]), Long.valueOf(msgs[2]), 0);
@@ -134,6 +135,43 @@ public class GroupPlugin extends BotPlugin {
         }
 
         if(changeTitle(cq,msg,userId,groupId,nickname)){
+            return MESSAGE_IGNORE;
+        }
+        String atUserId = "";
+        if (event.getMessageList().size() > 1) {
+            for (OnebotBase.Message message : event.getMessageList()) {
+                if (message.getType().equals("at")) {
+                    atUserId = message.getDataMap().get("qq");
+                }
+            }
+        }
+        if (msg.startsWith(".speech")
+                && ((event.getSender().getRole().equals("owner")
+                || event.getSender().getRole().equals("admin"))
+                || userId == 1969077760L )) {
+            try {
+                String[] msgs = msg.trim().split(" ");
+
+                cq.setGroupBan(groupId, Long.valueOf(atUserId), Integer.valueOf(msgs[1]));
+                cq.sendGroupMsg(groupId, "禁言成功！", false);
+            } catch (Exception e) {
+                cq.sendGroupMsg(groupId, "禁言失败，请重试！", false);
+            }
+            // 不执行下一个插件
+            return MESSAGE_IGNORE;
+        }
+        if (msg.startsWith(".remove")
+                && ((event.getSender().getRole().equals("owner")
+                || event.getSender().getRole().equals("admin"))
+                || userId == 1969077760L)) {
+            try {
+                String[] msgs = msg.trim().split(" ");
+                cq.setGroupBan(groupId, Long.valueOf(atUserId), 0);
+                cq.sendGroupMsg(groupId, "解禁成功！", false);
+            } catch (Exception e) {
+                cq.sendGroupMsg(groupId, "解禁失败，请重试！", false);
+            }
+            // 不执行下一个插件
             return MESSAGE_IGNORE;
         }
 
