@@ -53,6 +53,7 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n.dice help\t骰娘系统功能");
             sb.append("\n.file help\t角色卡地址功能");
             sb.append("\n.group help\t群管理功能");
+            sb.append("\n.other help\t群娱乐功能");
             sb.append("\n.xf on\t惜风开启");
             sb.append("\n.xf off\t惜风待机");
             sb.append("\n.dice on\t骰子开启");
@@ -106,22 +107,27 @@ public class HelpPlugin extends BotPlugin {
 
          if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
-            sb.append("\n.dice help\t骰娘系统功能");
-            sb.append("\n.file help\t角色卡地址功能");
-            sb.append("\n.group help\t群管理功能");
-            sb.append("\n.luck help\t群管理功能");
-            sb.append("\n.xf on\t惜风开启");
-            sb.append("\n.xf off\t惜风待机");
-            sb.append("\n.dice on\t骰子开启");
-            sb.append("\n.dice off\t骰子待机");
+            sb.append("\n.dice help  骰娘系统功能");
+            sb.append("\n.file help  角色卡地址功能");
+            sb.append("\n.group help 群管理功能");
+            sb.append("\n.xf help    惜风管理功能");
+            sb.append("\n.luck help  娱乐功能①");
             sb.append("\n");
-            sb.append("\n本次更新内容：\n惜风的开启关闭系统更新了！\t帮助命令：.help");
+            sb.append("\n本次更新内容：\n");
+            sb.append("\n新增群禁言功能");
+            sb.append("\n新增惜风幸运魔法");
+            sb.append("\n优化幻星集塔罗牌");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
 
         if (msg.startsWith(".dice help")) {
             StringBuffer sb = getTRPGHelpList();
+            cq.sendGroupMsg(groupId, sb.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+        if (msg.startsWith(".xf help")) {
+            StringBuffer sb = getXFHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -138,7 +144,7 @@ public class HelpPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
-        if (msg.startsWith(".other help")) {
+        if (msg.startsWith(".luck help")) {
             StringBuffer sb = getOtherHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
@@ -164,14 +170,25 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\ndnd车卡：  .dnd车卡数量（不要过大");
         return sb;
     }
+
+    private StringBuffer getXFHelpList() {
+        StringBuffer sb = new StringBuffer("以下是惜风的TRPG系统功能：");
+        sb.append("\n.xf on\t惜风开启");
+        sb.append("\n.xf off\t惜风待机");
+        sb.append("\n.dice on\t骰子开启");
+        sb.append("\n.dice off\t骰子待机");
+        return sb;
+    }
     private StringBuffer getGroupHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的群管理系统功能：");
         sb.append("\n私聊（需好友）：");
-        sb.append("\n.jy 禁言群组ID 被禁言人ID 时间（单位秒）");
-        sb.append("\n.jj 解禁群组ID 被解禁人ID");
+        sb.append("\n.speech 禁言群组ID 被禁言人ID 时间（单位秒）");
+        sb.append("\n.remove 解禁群组ID 被解禁人ID");
         sb.append("\n.tx 更换群组ID 修改头衔");
         sb.append("\n群聊:");
         sb.append("\n.tx 修改头衔");
+        sb.append("\n.speech 时间（单位秒） at被禁言人");
+        sb.append("\n.remove at被禁言人");
         sb.append("\n注意：禁言解禁目前仅限开发者使用");
         return sb;
     }
@@ -180,6 +197,7 @@ public class HelpPlugin extends BotPlugin {
         StringBuffer sb = new StringBuffer("以下是惜风的娱乐功能：");
         sb.append("\n.jrrp 今日人品值（每日一次）");
         sb.append("\n.tarot 每日塔罗（每日一次）");
+        sb.append("\n.magic xf 惜风的幸运魔法（每日一次）");
         return sb;
     }
 
