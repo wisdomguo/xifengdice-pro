@@ -1,18 +1,19 @@
 package com.wisdom.xifeng.plugin;
 
-import com.wisdom.xifeng.entity.QQGroup;
-import com.wisdom.xifeng.service.qqgroup.QQGroupSerivce;
-import com.wisdom.xifeng.util.BoolUtil;
-import lombok.SneakyThrows;
+
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
-import onebot.OnebotApi;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.*;
 
 
 /**
@@ -43,5 +44,23 @@ public class XFPlugin extends BotPlugin {
     public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
         bot.setGroupAddRequest(event.getFlag(),"",true,"");
         return MESSAGE_IGNORE;
+    }
+
+    /**
+     * 判断一个字符串是否是数字。
+     *
+     * @param string
+     * @return
+     */
+    public static boolean isNumber(String string) {
+        if (string == null) {
+            return false;
+        }
+        Pattern pattern = compile("^-?\\d+(\\.\\d+)?$");
+        return pattern.matcher(string).matches();
+    }
+
+    public static void main(String[] args) {
+
     }
 }

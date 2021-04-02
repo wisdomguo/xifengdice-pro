@@ -1,5 +1,6 @@
 package com.wisdom.xifeng.plugin;
 
+import com.alibaba.fastjson.JSON;
 import com.wisdom.xifeng.entity.QQGroup;
 import com.wisdom.xifeng.service.qqgroup.QQGroupSerivce;
 import com.wisdom.xifeng.util.BoolUtil;
@@ -13,9 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.compile;
 
 
 /**
@@ -27,6 +29,12 @@ import java.util.Random;
  * 查看API说明：光标移动到方法括号中按Ctrl+Q
  */
 
+/**
+ * DicePlugin
+ * 骰子
+ * @author wisdom-guo
+ * @since 2020
+ */
 @Component
 public class DicePlugin extends BotPlugin {
     /**
@@ -61,7 +69,6 @@ public class DicePlugin extends BotPlugin {
         long userId = event.getUserId();
         //获取发送者的所有信息
 
-//        OnebotApi.GetGroupMemberListResp a = cq.getGroupMemberList(groupId);
         String nickname=event.getSender().getNickname();
 
 
@@ -76,7 +83,7 @@ public class DicePlugin extends BotPlugin {
 
 
         //判断是否是骰娘操作
-        if (msg.indexOf("。r") != -1 || msg.indexOf("。R") != -1 || msg.indexOf(".R") != -1 || msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".COC") != -1 || msg.indexOf(".dnd") != -1 || msg.indexOf(".DND") != -1) {
+        if ((msg.indexOf("。r") != -1 || msg.indexOf("。R") != -1 || msg.indexOf(".R") != -1 || msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".COC") != -1 || msg.indexOf(".dnd") != -1 || msg.indexOf(".DND") != -1)&&msg.indexOf("remove")==-1) {
             //不区分大小写中英文
             msg = msg.replaceAll("R", "r");
             msg = msg.replaceAll("C", "c");
@@ -92,9 +99,11 @@ public class DicePlugin extends BotPlugin {
             }
         }
 
+
         // 继续执行下一个插件
         return MESSAGE_IGNORE;
     }
+
 
 
     private boolean sendDice(Bot cq, String msg, long groupId, long userId,String nickname) {
@@ -126,8 +135,8 @@ public class DicePlugin extends BotPlugin {
         if (msg.indexOf("（") != -1) {
             msg = msg.split("\\（")[0];
         }
-        String message[] = msg.replaceAll(" ", "").split(type);
-        if (type.equals(".coc") || type.equals(".COC")) {
+        String[] message = msg.replaceAll(" ", "").split(type);
+        if (".coc".equals(type) || ".COC".equals(type)) {
             String multiple = "1";
             if (message.length > 0) {
                 multiple = message[1];
@@ -146,7 +155,7 @@ public class DicePlugin extends BotPlugin {
                 sb.append("幸运:" + getRandom(3) * 5 + ";");
             }
             cq.sendGroupMsg(groupId, nickname+" "+sb.toString(), false);
-        } else if (type.equals(".dnd") || type.equals(".DND")) {
+        } else if (".dnd".equals(type) || ".DND".equals(type)) {
             String multiple = "1";
             if (message.length > 0) {
                 multiple = message[1];
@@ -165,7 +174,7 @@ public class DicePlugin extends BotPlugin {
         } else {
 
             if (message.length > 0) {
-                String count[] = message[1].replaceAll("D", "d").split("d");
+                String[] count = message[1].replaceAll("D", "d").split("d");
                 if (count.length > 0) {
                     String countEnd = "";
                     String countStrart = count[0];
@@ -262,6 +271,9 @@ public class DicePlugin extends BotPlugin {
     private double getFinalCount(String countEnd, String countStrart, StringBuffer sb, double finalCount) {
         //创建骰子数据list
         List<Integer> dList = new ArrayList<>();
+        if(Integer.parseInt(countStrart)>=1000){
+            countStrart="1000";
+        }
         //ndm创建n随机数
         for (int i = 0; i < Integer.parseInt(countStrart); i++) {
             Random random = new Random();
@@ -282,7 +294,7 @@ public class DicePlugin extends BotPlugin {
 
     private int getRandom(int n) {
         int k = 0;
-        int array[] = new int[n];
+        int[] array = new int[n];
         for (int j = 0; j < n; j++) {
             Random random = new Random();
             k += random.nextInt(6) + 1;
@@ -292,7 +304,7 @@ public class DicePlugin extends BotPlugin {
 
     private int getRandomDND(int n) {
         int k = 0;
-        int array[] = new int[n];
+        int[] array = new int[n];
         for (int j = 0; j < n; j++) {
             Random random = new Random();
             array[j] = random.nextInt(6) + 1;
@@ -315,4 +327,17 @@ public class DicePlugin extends BotPlugin {
     }
 
 
+    /**
+     * 判断一个字符串是否是数字。
+     *
+     * @param string
+     * @return
+     */
+    public boolean isNumber(String string) {
+        if (string == null) {
+            return false;
+        }
+        Pattern pattern = compile("^-?\\d+(\\.\\d+)?$");
+        return pattern.matcher(string).matches();
+    }
 }

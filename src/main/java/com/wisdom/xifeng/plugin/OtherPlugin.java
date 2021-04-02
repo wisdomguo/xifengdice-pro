@@ -220,7 +220,7 @@ public class OtherPlugin extends BotPlugin {
                 } else if (rp >= 50) {
                     rpStr.append("，运气还可以，今天也会是平稳的一天！");
                 } else {
-                    rpStr.append("，需要惜风施展一次幸运魔法吗？");
+                    rpStr.append("，需要惜风施展一次幸运魔法吗？请投掷.magic xf");
                 }
                 jrrp.put(key, rp);
                 cq.sendGroupMsg(groupId, nickname+(rpStr.toString()), false);
@@ -235,6 +235,10 @@ public class OtherPlugin extends BotPlugin {
 
             String key = String.valueOf(userId);
 
+            if(jrrp.get(key)==null){
+                cq.sendGroupMsg(groupId, "您还没有投掷今日人品哦...", false);
+                return MESSAGE_IGNORE;
+            }
             if (magicList.get(key) == null && jrrp.get(key)<50) {
                 Random random = new Random();
                 int rp = random.nextInt(100) + 1;
@@ -255,7 +259,7 @@ public class OtherPlugin extends BotPlugin {
                 Thread.sleep(1000);
                 cq.sendGroupMsg(groupId, nickname+(rpStr.toString()), false);
             } else {
-                cq.sendGroupMsg(groupId, nickname+"您现在还不能使用过惜风的魔法哦！", false);
+                cq.sendGroupMsg(groupId, nickname+"您现在不能使用惜风的魔法哦！", false);
             }
 
             return MESSAGE_IGNORE;
@@ -268,7 +272,7 @@ public class OtherPlugin extends BotPlugin {
             if (tarot < 10) {
                 tarotStr = "0" + tarotStr;
             }
-            int PN = random.nextInt(1);
+            int PN = random.nextInt(2);
             if(PN==1){
                 tarot+=22;
             }
@@ -324,9 +328,9 @@ public class OtherPlugin extends BotPlugin {
                     StringBuffer sb = new StringBuffer();
                     sb.append("您查看的角色卡列表为：");
                     for (CardAddress cardAddress : list) {
-                        sb.append("\n卡ID：" + cardAddress.getCardid());
-                        sb.append("\t卡名称：" + cardAddress.getCardname());
-                        sb.append("\n卡地址：" + cardAddress.getFileaddress());
+                        sb.append("\n卡ID：" + cardAddress.getCardId());
+                        sb.append("\t卡名称：" + cardAddress.getCardName());
+                        sb.append("\n卡地址：" + cardAddress.getFileAddress());
                     }
                     cq.sendGroupMsg(groupId, sb.toString(), false);
                 }
@@ -345,9 +349,9 @@ public class OtherPlugin extends BotPlugin {
                     StringBuffer sb = new StringBuffer();
                     sb.append("您查看的角色卡列表为：");
                     for (CardAddress cardAddress : list) {
-                        sb.append("\n卡ID：" + cardAddress.getCardid());
-                        sb.append("\t卡名称：" + cardAddress.getCardname());
-                        sb.append("\n卡地址：" + cardAddress.getFileaddress());
+                        sb.append("\n卡ID：" + cardAddress.getCardId());
+                        sb.append("\t卡名称：" + cardAddress.getCardName());
+                        sb.append("\n卡地址：" + cardAddress.getFileAddress());
                     }
                     cq.sendGroupMsg(groupId, sb.toString(), false);
                 }

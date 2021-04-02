@@ -11,15 +11,15 @@ import java.util.List;
 
 public interface CardAddressMapper {
 
-    @Select("SELECT * from CardAddress where QQid=#{qqid}")
+    @Select("SELECT * from CardAddress where qq_id=#{qqid}")
     List<CardAddress> selectAllByQQID(@Param("qqid") String qqid);
 
-    @Insert("insert into cardaddress value(default,#{cardname},#{fileaddress},#{qqid})")
+    @Insert("insert into cardaddress value(default,#{cardName},#{fileAddress},#{qqId})")
     int addCardAddress(CardAddress cardAddress);
 
-    @Delete("delete from cardaddress where cardid = #{id}")
+    @Delete("delete from cardaddress where card_id = #{id}")
     int deleteCardAddress(int id);
 
-    @Select("select count(*) from cardaddress where cardid=#{id} and qqid=#{qqid}")
+    @Select("select count(*) from cardaddress where card_id=#{id} and qq_id=#{qqid}")
     int checkIdAndQQ(@Param("id") int id, @Param("qqid") String qqid);
 }

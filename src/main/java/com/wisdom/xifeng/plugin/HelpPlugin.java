@@ -189,7 +189,7 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n.tx 修改头衔");
         sb.append("\n.speech 时间（单位秒） at被禁言人");
         sb.append("\n.remove at被禁言人");
-        sb.append("\n注意：禁言解禁目前仅限开发者使用");
+        sb.append("\n注意：禁言解禁目前仅限开发者和群管理使用");
         return sb;
     }
 
