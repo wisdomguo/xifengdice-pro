@@ -83,7 +83,7 @@ public class DicePlugin extends BotPlugin {
 
 
         //判断是否是骰娘操作
-        if ((msg.indexOf("。r") != -1 || msg.indexOf("。R") != -1 || msg.indexOf(".R") != -1 || msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".COC") != -1 || msg.indexOf(".dnd") != -1 || msg.indexOf(".DND") != -1)&&msg.indexOf("remove")==-1) {
+        if ((msg.indexOf("。r") != -1 || msg.indexOf("。R") != -1 || msg.indexOf(".R") != -1 || msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".COC") != -1 || msg.indexOf(".dnd") != -1 || msg.indexOf(".DND") != -1)) {
             //不区分大小写中英文
             msg = msg.replaceAll("R", "r");
             msg = msg.replaceAll("C", "c");
@@ -115,7 +115,7 @@ public class DicePlugin extends BotPlugin {
                 checkAndSendType(cq, msg, groupId, userId, ".rh",nickname);
             } else if (msg.startsWith(".rd")) {
                 checkAndSendType(cq, msg.replaceAll("rd", "r1d100("), groupId, userId, ".r",nickname);
-            } else if (msg.startsWith(".r")) {
+            } else if (msg.startsWith(".r")&&msg.indexOf("d")!=-1) {
                 checkAndSendType(cq, msg, groupId, userId, ".r",nickname);
             } else if (msg.startsWith(".coc")) {
                 checkAndSendType(cq, msg, groupId, userId, ".coc",nickname);

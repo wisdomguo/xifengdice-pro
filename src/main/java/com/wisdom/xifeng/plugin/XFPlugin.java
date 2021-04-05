@@ -46,21 +46,4 @@ public class XFPlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-    /**
-     * 判断一个字符串是否是数字。
-     *
-     * @param string
-     * @return
-     */
-    public static boolean isNumber(String string) {
-        if (string == null) {
-            return false;
-        }
-        Pattern pattern = compile("^-?\\d+(\\.\\d+)?$");
-        return pattern.matcher(string).matches();
-    }
-
-    public static void main(String[] args) {
-
-    }
 }

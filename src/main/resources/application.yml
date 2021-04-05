@@ -7,6 +7,7 @@ spring:
       - com.wisdom.xifeng.plugin.HelpPlugin
       - com.wisdom.xifeng.plugin.GroupPlugin
       - com.wisdom.xifeng.plugin.DicePlugin
+      - com.wisdom.xifeng.plugin.CardPlugin
       - com.wisdom.xifeng.plugin.LogPlugin # 日志插件
 
   datasource:
