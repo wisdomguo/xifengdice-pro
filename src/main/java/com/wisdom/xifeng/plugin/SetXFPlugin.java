@@ -7,7 +7,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
-import onebot.OnebotApi;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -51,7 +50,7 @@ public class SetXFPlugin extends BotPlugin {
         long userId = event.getUserId();
         //获取发送者的所有信息
 
-        setXF(cq, msg, groupId, event);
+        setXf(cq, msg, groupId, event);
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
             if (qqGroup.getXfOpen() == 1) {
@@ -67,7 +66,7 @@ public class SetXFPlugin extends BotPlugin {
     }
 
     //开关骰娘
-    private void setXF(@NotNull Bot cq, String msg, long groupId, @NotNull OnebotEvent.GroupMessageEvent event) {
+    private void setXf(@NotNull Bot cq, String msg, long groupId, @NotNull OnebotEvent.GroupMessageEvent event) {
         QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
         if (msg.startsWith(".xf")&&(event.getSender().getRole().equals("owner") || event.getSender().getRole().equals("admin"))) {
 

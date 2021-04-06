@@ -5,15 +5,11 @@ import com.wisdom.xifeng.service.qqgroup.QQGroupSerivce;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
-import onebot.OnebotApi;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -24,7 +20,12 @@ import java.util.Map;
  * 查看API参数类型：光标移动到方法括号中按Ctrl+P
  * 查看API说明：光标移动到方法括号中按Ctrl+Q
  */
-
+/**
+ * HelpPlugin
+ * 帮助文档
+ * @author wisdom-guo
+ * @since 2020
+ */
 @Component
 public class HelpPlugin extends BotPlugin {
     /**
@@ -66,7 +67,7 @@ public class HelpPlugin extends BotPlugin {
         }
 
         if (msg.startsWith(".dice help")) {
-            StringBuffer sb = getTRPGHelpList();
+            StringBuffer sb = getTrpgHelpList();
             cq.sendPrivateMsg(userId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -128,12 +129,12 @@ public class HelpPlugin extends BotPlugin {
         }
 
         if (msg.startsWith(".dice help")) {
-            StringBuffer sb = getTRPGHelpList();
+            StringBuffer sb = getTrpgHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
         if (msg.startsWith(".xf help")) {
-            StringBuffer sb = getXFHelpList();
+            StringBuffer sb = getXfHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -166,7 +167,7 @@ public class HelpPlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-    private StringBuffer getTRPGHelpList() {
+    private StringBuffer getTrpgHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的TRPG系统功能：");
         sb.append("\n自动省略空格,trpg规则中无论参数多少，结果向下取整");
         sb.append("\n明投：  .r骰子数d点数");
@@ -183,7 +184,7 @@ public class HelpPlugin extends BotPlugin {
         return sb;
     }
 
-    private StringBuffer getXFHelpList() {
+    private StringBuffer getXfHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的TRPG系统功能：");
         sb.append("\n.xf on\t惜风开启");
         sb.append("\n.xf off\t惜风待机");

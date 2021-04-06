@@ -75,7 +75,7 @@ public class CharacterCoC implements Serializable {
      */
     private Integer mp;
     /**
-     * 魔法
+     * 幸运
      */
     private Integer luck;
     /**

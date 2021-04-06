@@ -25,6 +25,13 @@ import javax.annotation.Resource;
  * 查看API说明：光标移动到方法括号中按Ctrl+Q
  */
 
+/**
+ * GroupPlugin
+ * 群管理
+ *
+ * @author wisdom-guo
+ * @since 2020
+ */
 @Component
 public class GroupPlugin extends BotPlugin {
     /**
@@ -44,10 +51,10 @@ public class GroupPlugin extends BotPlugin {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
         String msg = event.getRawMessage();
-        if (msg.equals("更新完成") && userId == 1969077760L) {
+        if ("更新完成".equals(msg) && userId == 1969077760L) {
             OnebotApi.GetGroupListResp grouplist = cq.getGroupList();
 
-            for(OnebotApi.GetGroupListResp.Group groupData:grouplist.getGroupList()){
+            for (OnebotApi.GetGroupListResp.Group groupData : grouplist.getGroupList()) {
                 cq.sendGroupMsg(groupData.getGroupId(), "更新完成，本次更新内容请通过.help查看！", false);
             }
 
@@ -88,10 +95,10 @@ public class GroupPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
-        if (msg.equals("更新中") && userId == 1969077760L) {
+        if ("更新中".equals(msg) && userId == 1969077760L) {
             OnebotApi.GetGroupListResp grouplist = cq.getGroupList();
 
-            for(OnebotApi.GetGroupListResp.Group groupData:grouplist.getGroupList()){
+            for (OnebotApi.GetGroupListResp.Group groupData : grouplist.getGroupList()) {
                 cq.sendGroupMsg(groupData.getGroupId(), "更新中，大家请稍后~", false);
             }
 
@@ -123,7 +130,7 @@ public class GroupPlugin extends BotPlugin {
         long userId = event.getUserId();
 
 
-        String nickname=event.getSender().getNickname();
+        String nickname = event.getSender().getNickname();
 
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
@@ -134,21 +141,22 @@ public class GroupPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
-        if(changeTitle(cq,msg,userId,groupId,nickname)){
+        if (changeTitle(cq, msg, userId, groupId, nickname)) {
             return MESSAGE_IGNORE;
         }
         String atUserId = "";
         if (event.getMessageList().size() > 1) {
             for (OnebotBase.Message message : event.getMessageList()) {
-                if (message.getType().equals("at")) {
+                if ("at".equals(message.getType())) {
                     atUserId = message.getDataMap().get("qq");
                 }
             }
         }
+        boolean judgment =  (("owner".equals(event.getSender().getRole())
+                || "admin".equals(event.getSender().getRole()))
+                || userId == 1969077760L);
         if (msg.startsWith(".speech")
-                && ((event.getSender().getRole().equals("owner")
-                || event.getSender().getRole().equals("admin"))
-                || userId == 1969077760L )) {
+                && judgment) {
             try {
                 String[] msgs = msg.trim().split(" ");
 
@@ -160,10 +168,9 @@ public class GroupPlugin extends BotPlugin {
             // 不执行下一个插件
             return MESSAGE_IGNORE;
         }
+
         if (msg.startsWith(".remove")
-                && ((event.getSender().getRole().equals("owner")
-                || event.getSender().getRole().equals("admin"))
-                || userId == 1969077760L)) {
+                &&judgment) {
             try {
                 String[] msgs = msg.trim().split(" ");
                 cq.setGroupBan(groupId, Long.valueOf(atUserId), 0);
@@ -181,18 +188,18 @@ public class GroupPlugin extends BotPlugin {
     }
 
 
-    public boolean changeTitle(Bot cq,String msg,Long userId,Long groupId,String nickname){
+    public boolean changeTitle(Bot cq, String msg, Long userId, Long groupId, String nickname) {
         if (msg.startsWith(".tx")) {
             try {
-                String[] msgs=msg.trim().split(" ");
-                cq.setGroupSpecialTitle(groupId,userId,msgs[1],-1);
-                cq.sendGroupMsg(groupId, nickname+":惜风已为您成功更换头衔", false);
-            }catch (Exception e){
-                cq.sendGroupMsg(groupId, nickname+" 更换失败，请重试", false);
+                String[] msgs = msg.trim().split(" ");
+                cq.setGroupSpecialTitle(groupId, userId, msgs[1], -1);
+                cq.sendGroupMsg(groupId, nickname + ":惜风已为您成功更换头衔", false);
+            } catch (Exception e) {
+                cq.sendGroupMsg(groupId, nickname + " 更换失败，请重试", false);
             }
             // 不执行下一个插件
             return true;
-        }else{
+        } else {
             return false;
         }
 

@@ -271,8 +271,8 @@ public class DicePlugin extends BotPlugin {
     private double getFinalCount(String countEnd, String countStrart, StringBuffer sb, double finalCount) {
         //创建骰子数据list
         List<Integer> dList = new ArrayList<>();
-        if(Integer.parseInt(countStrart)>=1000){
-            countStrart="1000";
+        if(Integer.parseInt(countStrart)>=100){
+            countStrart="100";
         }
         //ndm创建n随机数
         for (int i = 0; i < Integer.parseInt(countStrart); i++) {

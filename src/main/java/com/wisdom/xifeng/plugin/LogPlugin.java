@@ -6,7 +6,12 @@ import net.lz1998.pbbot.bot.BotPlugin;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
+/**
+ * LogPlugin
+ * 日志打印
+ * @author wisdom-guo
+ * @since 2020
+ */
 @Slf4j
 @Component
 public class LogPlugin extends BotPlugin {
