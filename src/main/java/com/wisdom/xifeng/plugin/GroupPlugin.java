@@ -50,7 +50,7 @@ public class GroupPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         if ("更新完成".equals(msg) && userId == 1969077760L) {
             OnebotApi.GetGroupListResp grouplist = cq.getGroupList();
 
@@ -123,7 +123,7 @@ public class GroupPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ

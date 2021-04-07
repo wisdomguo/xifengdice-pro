@@ -43,7 +43,7 @@ public class SetXFPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ

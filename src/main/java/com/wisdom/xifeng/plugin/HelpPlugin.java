@@ -47,7 +47,7 @@ public class HelpPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
 
         if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
@@ -106,7 +106,7 @@ public class HelpPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
