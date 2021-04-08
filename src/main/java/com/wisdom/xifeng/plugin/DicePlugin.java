@@ -32,6 +32,7 @@ import static java.util.regex.Pattern.compile;
 /**
  * DicePlugin
  * 骰子
+ *
  * @author wisdom-guo
  * @since 2020
  */
@@ -62,14 +63,14 @@ public class DicePlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。", ".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
         //获取发送者的所有信息
 
-        String nickname=event.getSender().getNickname();
+        String nickname = event.getSender().getNickname();
 
 
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
@@ -80,21 +81,17 @@ public class DicePlugin extends BotPlugin {
         } else {
             return MESSAGE_IGNORE;
         }
-
+        msg = msg.replaceAll("R", "r");
+        msg = msg.replaceAll("C", "c");
+        msg = msg.replaceAll("D", "d");
+        msg = msg.replaceAll("N", "n");
+        msg = msg.replaceAll("O", "o");
 
         //判断是否是骰娘操作
-        if ((msg.indexOf("。r") != -1 || msg.indexOf("。R") != -1 || msg.indexOf(".R") != -1 || msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".COC") != -1 || msg.indexOf(".dnd") != -1 || msg.indexOf(".DND") != -1)&&msg.indexOf("remove")==-1) {
+        if ((msg.indexOf(".r") != -1 || msg.indexOf(".coc") != -1 || msg.indexOf(".dnd") != -1)) {
             //不区分大小写中英文
-            msg = msg.replaceAll("R", "r");
-            msg = msg.replaceAll("C", "c");
-            msg = msg.replaceAll("D", "d");
-            msg = msg.replaceAll("N", "n");
-            msg = msg.replaceAll("O", "o");
-            msg = msg.replaceAll("。r", ".r");
-            msg = msg.replaceAll("。coc", ".coc");
-            msg = msg.replaceAll("。dnd", ".dnd");
-            //
-            if (sendDice(cq, msg, groupId, userId,nickname)) {
+
+            if (sendDice(cq, msg, groupId, userId, nickname)) {
                 return MESSAGE_IGNORE;
             }
         }
@@ -105,22 +102,23 @@ public class DicePlugin extends BotPlugin {
     }
 
 
-
-    private boolean sendDice(Bot cq, String msg, long groupId, long userId,String nickname) {
+    private boolean sendDice(Bot cq, String msg, long groupId, long userId, String nickname) {
 //        原coutType
 
         if (qqGroupSerivce.selectAllByID(String.valueOf(groupId)).getDiceOpen() == 0) {
             //判断骰娘是否开启
             if (msg.startsWith(".rh")) {
-                checkAndSendType(cq, msg, groupId, userId, ".rh",nickname);
+                checkAndSendType(cq, msg, groupId, userId, ".rh", nickname);
+            } else if (msg.split("d").length > 3) {
+
             } else if (msg.startsWith(".rd")) {
-                checkAndSendType(cq, msg.replaceAll("rd", "r1d100("), groupId, userId, ".r",nickname);
-            } else if (msg.startsWith(".r")) {
-                checkAndSendType(cq, msg, groupId, userId, ".r",nickname);
+                checkAndSendType(cq, msg.replaceAll("rd", "r1d100("), groupId, userId, ".r", nickname);
+            } else if (msg.startsWith(".r") && msg.indexOf("d") != -1) {
+                checkAndSendType(cq, msg, groupId, userId, ".r", nickname);
             } else if (msg.startsWith(".coc")) {
-                checkAndSendType(cq, msg, groupId, userId, ".coc",nickname);
+                getCocDice(cq, msg, groupId, nickname);
             } else if (msg.startsWith(".dnd")) {
-                checkAndSendType(cq, msg, groupId, userId, ".dnd",nickname);
+                getDndDice(cq, msg, groupId, nickname);
             }
             // 不执行下一个插件
             return true;
@@ -128,7 +126,48 @@ public class DicePlugin extends BotPlugin {
         return false;
     }
 
-    private void checkAndSendType(Bot cq, String msg, long groupId, long userId, String type,String nickname) {
+    private void getDndDice(Bot cq, String msg, long groupId, String nickname) {
+        String[] message = msg.replaceAll(" ", "").split(".dnd");
+        String multiple = "1";
+        if (message.length > 0) {
+            multiple = message[1];
+        }
+        StringBuffer sb = new StringBuffer("您新车的dnd" + multiple + "个卡6属性分别为：");
+        for (int i = 0; i < Integer.valueOf(multiple); i++) {
+            sb.append("\n");
+            sb.append("力量：" + getRandomDND(4) + " ");
+            sb.append("敏捷：" + getRandomDND(4) + " ");
+            sb.append("智力：" + getRandomDND(4) + " ");
+            sb.append("体质：" + getRandomDND(4) + " ");
+            sb.append("魅力：" + getRandomDND(4) + " ");
+            sb.append("感知：" + getRandomDND(4) + " ");
+        }
+        cq.sendGroupMsg(groupId, nickname + " " + sb.toString(), false);
+    }
+
+    private void getCocDice(Bot cq, String msg, long groupId, String nickname) {
+        String[] message = msg.replaceAll(" ", "").split(".coc");
+        String multiple = "1";
+        if (message.length > 0) {
+            multiple = message[1];
+        }
+        StringBuffer sb = new StringBuffer("您新车的" + multiple + "个卡分别为：");
+        for (int i = 0; i < Integer.valueOf(multiple); i++) {
+            sb.append("\n");
+            sb.append("力量:" + getRandom(3) * 5 + " ");
+            sb.append("体质:" + getRandom(3) * 5 + " ");
+            sb.append("体型:" + (getRandom(2) + 6) * 5 + " ");
+            sb.append("敏捷:" + getRandom(3) * 5 + " ");
+            sb.append("魅力:" + getRandom(3) * 5 + " ");
+            sb.append("智力:" + (getRandom(2) + 6) * 5 + " ");
+            sb.append("意志:" + getRandom(3) * 5 + " ");
+            sb.append("教育:" + (getRandom(2) + 6) * 5 + " ");
+            sb.append("幸运:" + getRandom(3) * 5 + ";");
+        }
+        cq.sendGroupMsg(groupId, nickname + " " + sb.toString(), false);
+    }
+
+    private void checkAndSendType(Bot cq, String msg, long groupId, long userId, String type, String nickname) {
         if (msg.indexOf("(") != -1) {
             msg = msg.split("\\(")[0];
         }
@@ -136,161 +175,83 @@ public class DicePlugin extends BotPlugin {
             msg = msg.split("\\（")[0];
         }
         String[] message = msg.replaceAll(" ", "").split(type);
-        if (".coc".equals(type) || ".COC".equals(type)) {
-            String multiple = "1";
-            if (message.length > 0) {
-                multiple = message[1];
-            }
-            StringBuffer sb = new StringBuffer("您新车的" + multiple + "个卡分别为：");
-            for (int i = 0; i < Integer.valueOf(multiple); i++) {
-                sb.append("\n");
-                sb.append("力量:" + getRandom(3) * 5 + " ");
-                sb.append("体质:" + getRandom(3) * 5 + " ");
-                sb.append("体型:" + (getRandom(2) + 6) * 5 + " ");
-                sb.append("敏捷:" + getRandom(3) * 5 + " ");
-                sb.append("魅力:" + getRandom(3) * 5 + " ");
-                sb.append("智力:" + (getRandom(2) + 6) * 5 + " ");
-                sb.append("意志:" + getRandom(3) * 5 + " ");
-                sb.append("教育:" + (getRandom(2) + 6) * 5 + " ");
-                sb.append("幸运:" + getRandom(3) * 5 + ";");
-            }
-            cq.sendGroupMsg(groupId, nickname+" "+sb.toString(), false);
-        } else if (".dnd".equals(type) || ".DND".equals(type)) {
-            String multiple = "1";
-            if (message.length > 0) {
-                multiple = message[1];
-            }
-            StringBuffer sb = new StringBuffer("您新车的dnd" + multiple + "个卡6属性分别为：");
-            for (int i = 0; i < Integer.valueOf(multiple); i++) {
-                sb.append("\n");
-                sb.append("力量：" + getRandomDND(4) + " ");
-                sb.append("敏捷：" + getRandomDND(4) + " ");
-                sb.append("智力：" + getRandomDND(4) + " ");
-                sb.append("体质：" + getRandomDND(4) + " ");
-                sb.append("魅力：" + getRandomDND(4) + " ");
-                sb.append("感知：" + getRandomDND(4) + " ");
-            }
-            cq.sendGroupMsg(groupId, nickname+" "+sb.toString(), false);
-        } else {
 
-            if (message.length > 0) {
-                String[] count = message[1].replaceAll("D", "d").split("d");
-                if (count.length > 0) {
-                    String countEnd = "";
-                    String countStrart = count[0];
-                    String multiple = "1";
-                    String add = "0";
 
-                    //创建stringbuffer系列
-                    StringBuffer sb = new StringBuffer("您投出了" + msg + "：{");
-                    //创建最终结果变量
-                    double finalCount = 0;
-                    try {
-                        if (count[1].indexOf("*") != -1 && (count[1].indexOf("+") != -1 || count[1].indexOf("-") != -1)) {
-                            if (count[1].indexOf("+") != -1) {
-                                if (count[1].indexOf("*") < count[1].indexOf("+")) {
-                                    String countCenter = count[1].split("\\*")[0];
-                                    add = count[1].split("\\+")[1].split("\\*")[0];
-                                    countEnd = countCenter;
-                                    multiple = count[1].split("\\+")[0].split("\\*")[1];
-                                    finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                    finalCount = finalCount * Double.valueOf(multiple.toString());
-                                    finalCount += Double.valueOf(add.toString());
-                                } else if (count[1].indexOf("*") > count[1].indexOf("+")) {
-                                    String countCenter = count[1].split("\\+")[0];
-                                    multiple = count[1].split("\\*")[1].split("\\*")[0];
-                                    countEnd = countCenter;
-                                    add = count[1].split("\\*")[0].split("\\+")[1];
-                                    finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                    finalCount += Double.valueOf(add.toString());
-                                    finalCount = finalCount * Double.valueOf(multiple.toString());
-                                }
-                            }
+        if (message.length > 0) {
 
-                            if (count[1].indexOf("-") != -1) {
-                                if (count[1].indexOf("*") < count[1].indexOf("-")) {
-                                    String countCenter = count[1].split("\\*")[0];
-                                    add = count[1].split("\\-")[1].split("\\*")[0];
-                                    countEnd = countCenter;
-                                    multiple = count[1].split("\\-")[0].split("\\*")[1];
-                                    finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                    finalCount = finalCount * Double.valueOf(multiple.toString());
-                                    finalCount -= Double.valueOf(add.toString());
-                                } else if (count[1].indexOf("*") > count[1].indexOf("-")) {
-                                    String countCenter = count[1].split("\\-")[0];
-                                    multiple = count[1].split("\\*")[1].split("\\*")[0];
-                                    countEnd = countCenter;
-                                    add = count[1].split("\\*")[0].split("\\-")[1];
-                                    finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                    finalCount -= Double.valueOf(add.toString());
-                                    finalCount = finalCount * Double.valueOf(multiple.toString());
-                                }
-                            }
-
-                        } else {
-                            if (count[1].indexOf("-") != -1) {
-                                countEnd = count[1].split("\\-")[0];
-                                add = count[1].split("\\-")[1];
-                                finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                finalCount -= Double.valueOf(add.toString());
-                            } else {
-                                if (count[1].indexOf("*") != -1) {
-                                    countEnd = count[1].split("\\*")[0];
-                                    multiple = count[1].split("\\*")[1];
-                                } else if (count[1].indexOf("+") != -1) {
-                                    countEnd = count[1].split("\\+")[0];
-                                    add = count[1].split("\\+")[1];
-                                } else {
-                                    countEnd = count[1];
-                                }
-                                finalCount = getFinalCount(countEnd, countStrart, sb, finalCount);
-                                finalCount = finalCount * Double.valueOf(multiple.toString());
-                                finalCount += Double.valueOf(add.toString());
-                            }
+            //创建stringbuffer系列
+            StringBuilder builder = new StringBuilder("您掷骰: " + msg.replaceAll("d","D").replaceAll("[*]","X").replaceAll("/","÷") + ":");
+            try {
+                List<String> dList=new ArrayList<>();
+                List<String> symbols=new ArrayList<>();
+                char[] msgs=message[1].toCharArray();
+                String str="";
+                int mDCount=0;
+                mDCount = getmDCount(dList, symbols, msgs, str, mDCount);
+                String result = getResult(dList);
+                changeDiceList(dList, symbols, mDCount,2);
+                builder.append(result);
+                for(int i=0;i<symbols.size();i++){
+                    String symbol=symbols.get(i).replaceAll("[*]","X").replaceAll("/","÷");
+                    if (i == 0) {
+                        builder.append("="+dList.get(i)+symbol);
+                    }else{
+                        if(i==symbols.size()-1){
+                            builder.append(dList.get(i)+symbol+dList.get(i+1));
+                        }else{
+                            builder.append(dList.get(i)+symbol);
                         }
-                        sb.append("} 合计：" + String.valueOf((int) finalCount));
-                    } catch (Exception e) {
-                        sb.append("} 合计：" + 0);
                     }
-
-
-                    // 调用API发送消息
-                    if (msg.startsWith(".rh")) {
-                        //私发
-                        cq.sendPrivateMsg(userId, sb.toString(), false);
-                    } else if (msg.startsWith(".r")) {
-                        //群聊
-                        cq.sendGroupMsg(groupId, nickname+" "+sb.toString(), false);
-                    }
-
                 }
+                int remaining=symbols.size();
+                changeDiceList(dList, symbols, remaining,1);
+                builder.append("合计："+dList.get(0));
+            } catch (Exception e) {
+                builder.append("合计：" + 0);
             }
+            // 调用API发送消息
+            if (msg.startsWith(".rh")) {
+                //私发
+                cq.sendPrivateMsg(userId, builder.toString(), false);
+            } else if (msg.startsWith(".r")) {
+                //群聊
+                cq.sendGroupMsg(groupId, nickname + "" + builder.toString(), false);
+            }
+
         }
+
     }
 
-    private double getFinalCount(String countEnd, String countStrart, StringBuffer sb, double finalCount) {
-        //创建骰子数据list
-        List<Integer> dList = new ArrayList<>();
-        if(Integer.parseInt(countStrart)>=1000){
-            countStrart="1000";
-        }
-        //ndm创建n随机数
-        for (int i = 0; i < Integer.parseInt(countStrart); i++) {
-            Random random = new Random();
-            int j = random.nextInt(Integer.parseInt(countEnd)) + 1;
-            dList.add(j);
-        }
-
-        //循环拿到最终结果，并添加回复字符串
-        for (int i = 0; i < dList.size(); i++) {
-            finalCount += dList.get(i);
-            sb.append(dList.get(i).toString());
-            if (i != (dList.size() - 1)) {
-                sb.append(",");
+    @NotNull
+    private String getResult(List<String> dList) {
+        String result="";
+        for(int i=0;i<dList.size();i++){
+            if (dList.get(i).indexOf("d")!=-1){
+                if("".equals(result)){
+                    result+="[";
+                }else{
+                    result+="，[";
+                }
+                String[] dice=dList.get(i).split("d");
+                int resultValue=0;
+                for(int j=0;j<Integer.valueOf(dice[0]);j++){
+                    int diceValue=Integer.valueOf(dice[1]);
+                    Random random=new Random();
+                    int ranNum=random.nextInt(diceValue)+1;
+                    resultValue+=ranNum;
+                    if(j==0){
+                        result+=String.valueOf(ranNum);
+                    }else{
+                        result+="，"+String.valueOf(ranNum);
+                    }
+                }
+                result+="] ";
+                dList.set(i,String.valueOf(resultValue));
             }
         }
-        return finalCount;
+        return result;
     }
+
 
     private int getRandom(int n) {
         int k = 0;
@@ -326,18 +287,62 @@ public class DicePlugin extends BotPlugin {
         return k;
     }
 
-
-    /**
-     * 判断一个字符串是否是数字。
-     *
-     * @param string
-     * @return
-     */
-    public boolean isNumber(String string) {
-        if (string == null) {
-            return false;
+    private static int getmDCount(List<String> dList, List<String> symbols, char[] msgs, String str, int mDCount) {
+        for (int i = 0; i < msgs.length; i++) {
+            String c = String.valueOf(msgs[i]);
+            if (c.equals("+") || c.equals("-") || c.equals("*") || c.equals("/")) {
+                dList.add(str);
+                symbols.add(c);
+                str = "";
+                if (c.equals("*") || c.equals("/")) {
+                    mDCount++;
+                }
+            } else {
+                str += c;
+            }
+            if (i + 1 == msgs.length) {
+                dList.add(str);
+                str = "";
+            }
         }
-        Pattern pattern = compile("^-?\\d+(\\.\\d+)?$");
-        return pattern.matcher(string).matches();
+        return mDCount;
     }
+
+    private static void changeDiceList(List<String> dList, List<String> symbols, int remaining, int type) {
+        for (int i = 0; i < remaining; i++) {
+            int z = 0;
+            int result = 0;
+            for (int j = 0; j < symbols.size(); j++) {
+                if (type == 1) {
+                    if (symbols.get(j).equals("+")) {
+                        z = j;
+                        result = Integer.valueOf(dList.get(j)) + Integer.valueOf(dList.get(j + 1));
+                        break;
+                    }
+                    if (symbols.get(j).equals("-")) {
+                        z = j;
+                        result = Integer.valueOf(dList.get(j)) - Integer.valueOf(dList.get(j + 1));
+                        break;
+                    }
+                } else {
+                    if (symbols.get(j).equals("*")) {
+                        z = j;
+                        result = Integer.valueOf(dList.get(j)) * Integer.valueOf(dList.get(j + 1));
+                        break;
+                    }
+                    if (symbols.get(j).equals("/")) {
+                        z = j;
+                        result = Integer.valueOf(dList.get(j)) / Integer.valueOf(dList.get(j + 1));
+                        break;
+                    }
+                }
+            }
+            symbols.remove(z);
+            dList.remove(z);
+            dList.remove(z);
+            dList.add(z, String.valueOf(result));
+        }
+    }
+
+
 }

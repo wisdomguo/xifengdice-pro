@@ -5,15 +5,11 @@ import com.wisdom.xifeng.service.qqgroup.QQGroupSerivce;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
-import onebot.OnebotApi;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -24,7 +20,12 @@ import java.util.Map;
  * 查看API参数类型：光标移动到方法括号中按Ctrl+P
  * 查看API说明：光标移动到方法括号中按Ctrl+Q
  */
-
+/**
+ * HelpPlugin
+ * 帮助文档
+ * @author wisdom-guo
+ * @since 2020
+ */
 @Component
 public class HelpPlugin extends BotPlugin {
     /**
@@ -46,7 +47,7 @@ public class HelpPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
 
         if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
@@ -66,7 +67,7 @@ public class HelpPlugin extends BotPlugin {
         }
 
         if (msg.startsWith(".dice help")) {
-            StringBuffer sb = getTRPGHelpList();
+            StringBuffer sb = getTrpgHelpList();
             cq.sendPrivateMsg(userId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -78,6 +79,12 @@ public class HelpPlugin extends BotPlugin {
         }
 
         if (msg.startsWith(".group help")) {
+            StringBuffer sb = getGroupHelpList();
+            cq.sendPrivateMsg(userId, sb.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+
+        if (msg.startsWith(".card help")) {
             StringBuffer sb = getGroupHelpList();
             cq.sendPrivateMsg(userId, sb.toString(), false);
             return MESSAGE_IGNORE;
@@ -99,7 +106,7 @@ public class HelpPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
@@ -107,27 +114,27 @@ public class HelpPlugin extends BotPlugin {
 
          if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
+             sb.append("\n.file help 角色卡地址功能");
+             sb.append("\n.xf help   惜风管理功能");
             sb.append("\n.dice help  骰娘系统功能");
-            sb.append("\n.file help  角色卡地址功能");
             sb.append("\n.group help 群管理功能");
-            sb.append("\n.xf help    惜风管理功能");
             sb.append("\n.luck help  娱乐功能①");
+            sb.append("\n.card help  coc角色卡");
             sb.append("\n");
-            sb.append("\n本次更新内容：\n");
-            sb.append("\n新增群禁言功能");
-            sb.append("\n新增惜风幸运魔法");
-            sb.append("\n优化幻星集塔罗牌");
+            sb.append("\n本次更新内容：");
+            sb.append("\n更新coc角色卡功能");
+            sb.append("\n下版本更新：复合骰");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
 
         if (msg.startsWith(".dice help")) {
-            StringBuffer sb = getTRPGHelpList();
+            StringBuffer sb = getTrpgHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
         if (msg.startsWith(".xf help")) {
-            StringBuffer sb = getXFHelpList();
+            StringBuffer sb = getXfHelpList();
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -150,11 +157,17 @@ public class HelpPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
+        if (msg.startsWith(".card help")) {
+            StringBuffer sb = getCardHelpList();
+            cq.sendGroupMsg(groupId, sb.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+
         // 继续执行下一个插件
         return MESSAGE_IGNORE;
     }
 
-    private StringBuffer getTRPGHelpList() {
+    private StringBuffer getTrpgHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的TRPG系统功能：");
         sb.append("\n自动省略空格,trpg规则中无论参数多少，结果向下取整");
         sb.append("\n明投：  .r骰子数d点数");
@@ -171,7 +184,7 @@ public class HelpPlugin extends BotPlugin {
         return sb;
     }
 
-    private StringBuffer getXFHelpList() {
+    private StringBuffer getXfHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的TRPG系统功能：");
         sb.append("\n.xf on\t惜风开启");
         sb.append("\n.xf off\t惜风待机");
@@ -179,6 +192,7 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n.dice off\t骰子待机");
         return sb;
     }
+
     private StringBuffer getGroupHelpList() {
         StringBuffer sb = new StringBuffer("以下是惜风的群管理系统功能：");
         sb.append("\n私聊（需好友）：");
@@ -209,6 +223,25 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n查看个人角色卡：  .findcard @群成员");
         sb.append("\n查看全群角色卡：  .findallcard");
         sb.append("\n注：请注意空格，删除只能本人或者管理员进行操作！");
+        return sb;
+    }
+
+    private StringBuffer getCardHelpList() {
+        StringBuffer sb = new StringBuffer("以下是惜风的角色卡功能：");
+        sb.append("\n设置角色卡:   .st技能名技能数值");
+        sb.append("\n带名称角色卡: .st 卡名 技能名技能数值");
+        sb.append("\n本群角色列表: .pc list");
+        sb.append("\n默认角色列表: .pc grp");
+        sb.append("\n重命名角色卡: .pc rename 卡序号 卡名");
+        sb.append("\n修改默认角色: .pc bind 卡序号");
+        sb.append("\n删除角色卡:   .pc del 卡序号");
+        sb.append("\n清理角色卡:   .pc clr");
+        sb.append("\n修改默认技能: .ch技能名 技能数值");
+        sb.append("\n修改默认San:  .stsan -1");
+        sb.append("\n修改默认HP:   .sthp -1");
+        sb.append("\n修改默认MP:   .stmp -1");
+        sb.append("\nSan Check:   .sc 成功骰/失败骰");
+        sb.append("\n技能判定:     .ra技能名");
         return sb;
     }
 

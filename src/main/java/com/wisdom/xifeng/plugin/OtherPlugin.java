@@ -1,11 +1,15 @@
 package com.wisdom.xifeng.plugin;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wisdom.xifeng.entity.CardAddress;
 import com.wisdom.xifeng.entity.QQGroup;
 import com.wisdom.xifeng.service.cardaddress.CardAddressSerivce;
 import com.wisdom.xifeng.service.qqgroup.QQGroupSerivce;
 import com.wisdom.xifeng.util.BoolUtil;
 import com.wisdom.xifeng.util.HttpClientUtil;
+import com.wisdom.xifeng.util.Tarot;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotContainer;
@@ -20,6 +24,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 
@@ -56,100 +62,6 @@ public class OtherPlugin extends BotPlugin {
     private Map<String, Integer> tarotList = new HashMap();
     private Map<String, Integer> magicList = new HashMap();
 
-    private String getTarot(Integer id){
-        switch(id){
-            case 0:
-                return "【0】愚者-正置";
-            case 1:
-                return "【I】魔术师-正置";
-            case 2:
-                return "【II】女祭司-正置";
-            case 3:
-                return "【III】女皇-正置";
-            case 4:
-                return "【IV】皇帝-正置";
-            case 5:
-                return "【V】教皇-正置";
-            case 6:
-                return "【VI】恋人-正置";
-            case 7:
-                return "【VII】战车-正置";
-            case 8:
-                return "【VIII】力量-正置";
-            case 9:
-                return "【IX】隐者-正置";
-            case 10:
-                return "【X】命运之轮-正置";
-            case 11:
-                return "【XI】正义-正置";
-            case 12:
-                return "【XII】倒吊人-正置";
-            case 13:
-                return "【XIII】死神-正置";
-            case 14:
-                return "【XIV】节制-正置";
-            case 15:
-                return "【XV】恶魔-正置";
-            case 16:
-                return "【XVI】塔-正置";
-            case 17:
-                return "【XVII】星星-正置";
-            case 18:
-                return "【XVIII】月亮-正置";
-            case 19:
-                return "【XIX】太阳-正置";
-            case 20:
-                return "【XX】审判-正置";
-            case 21:
-                return "【XXI】世界-正置";
-            case 22:
-                return "【0】愚者-倒置";
-            case 23:
-                return "【I】魔术师-倒置";
-            case 24:
-                return "【II】女祭司-倒置";
-            case 25:
-                return "【III】女皇-倒置";
-            case 26:
-                return "【IV】皇帝-倒置";
-            case 27:
-                return "【V】教皇-倒置";
-            case 28:
-                return "【VI】恋人-倒置";
-            case 29:
-                return "【VII】战车-倒置";
-            case 30:
-                return "【VIII】力量-倒置";
-            case 31:
-                return "【IX】隐者-倒置";
-            case 32:
-                return "【X】命运之轮-倒置";
-            case 33:
-                return "【XI】正义-倒置";
-            case 34:
-                return "【XII】倒吊人-倒置";
-            case 35:
-                return "【XIII】死神-倒置";
-            case 36:
-                return "【XIV】节制-倒置";
-            case 37:
-                return "【XV】恶魔-倒置";
-            case 38:
-                return "【XVI】塔-倒置";
-            case 39:
-                return "【XVII】星星-倒置";
-            case 40:
-                return "【XVIII】月亮-倒置";
-            case 41:
-                return "【XIX】太阳-倒置";
-            case 42:
-                return "【XX】审判-倒置";
-            case 43:
-                return "【XXI】审判-倒置";
-            default:
-                return "";
-        }
-    }
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
     public void captainClub() {
@@ -177,12 +89,11 @@ public class OtherPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage();
+        String msg = event.getRawMessage().replaceAll("。",".");
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-
         String atUserId = "";
         if (event.getMessageList().size() > 1) {
             for (OnebotBase.Message message : event.getMessageList()) {
@@ -192,10 +103,7 @@ public class OtherPlugin extends BotPlugin {
             }
         }
         //获取发送者的所有信息
-
-
         String nickname=event.getSender().getNickname();
-
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
             if (qqGroup.getXfOpen() == 1) {
@@ -204,7 +112,6 @@ public class OtherPlugin extends BotPlugin {
         } else {
             return MESSAGE_IGNORE;
         }
-
         if (msg.indexOf(".jrrp") != -1) {
 
             String key = String.valueOf(userId);
@@ -230,7 +137,6 @@ public class OtherPlugin extends BotPlugin {
 
             return MESSAGE_IGNORE;
         }
-
         if (msg.indexOf(".magic xf") != -1) {
 
             String key = String.valueOf(userId);
@@ -264,7 +170,6 @@ public class OtherPlugin extends BotPlugin {
 
             return MESSAGE_IGNORE;
         }
-
         if (msg.indexOf(".tarot") != -1) {
             Random random = new Random();
             int tarot = random.nextInt(22);
@@ -279,19 +184,29 @@ public class OtherPlugin extends BotPlugin {
             String key = String.valueOf(userId);
             if (tarotList.get(key) == null) {
                 tarotList.put(key, tarot);
-                cq.sendGroupMsg(groupId, nickname+"您抽取到的为:"+getTarot(tarotList.get(key))+"", false);
-                cq.sendGroupMsg(groupId, Msg.builder().image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
+                if(tarotList.get(key)>21){
+                    Tarot tarotObj=getTarotJson(tarotList.get(key)-22);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()).image("http://ali.gruiheng.com:8888/" + tarotStr + "-inversion.png"), false);
+                }else{
+                    Tarot tarotObj=getTarotJson(tarotList.get(key));
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()).image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
+                }
 
             } else {
-                cq.sendGroupMsg(groupId, nickname+"您今天已进行抽取过塔罗:\n"+getTarot(tarotList.get(key))+"\n明天再来吧！", false);
+                if(tarotList.get(key)>21){
+                    Tarot tarotObj=getTarotJson(tarotList.get(key)-22);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您今天已进行抽取过塔罗:\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()+"\n明天再来吧！"), false);
+                }else{
+                    Tarot tarotObj=getTarotJson(tarotList.get(key));
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您今天已进行抽取过塔罗:\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()+"\n明天再来吧！"), false);
+                }
             }
 
             return MESSAGE_IGNORE;
         }
-
         if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1 || msg.indexOf("。") != -1)) {
             if (msg.startsWith(".addcard") || msg.startsWith("。addcard")) {
-                String card[] = msg.split(" ");
+                String[] card = msg.split(" ");
                 if (!atUserId.equals("")) {
                     userId = Long.valueOf(atUserId);
                 }
@@ -303,9 +218,8 @@ public class OtherPlugin extends BotPlugin {
                 }
                 return MESSAGE_IGNORE;
             }
-
             if (msg.startsWith(".delcard") || msg.startsWith("。delcard")) {
-                String card[] = msg.split(" ");
+                String[] card = msg.split(" ");
                 boolean admin = false;
                 if ((event.getSender().getRole().equals("admin") || event.getSender().getRole().equals("owner"))) {
                     admin = true;
@@ -361,6 +275,24 @@ public class OtherPlugin extends BotPlugin {
 
         // 继续执行下一个插件
         return MESSAGE_IGNORE;
+    }
+
+    public Tarot getTarotJson(int num) throws IOException {
+        String path = "/tarot.json";
+        InputStream config = getClass().getResourceAsStream(path);
+        if (config == null) {
+            throw new RuntimeException("读取文件失败");
+        } else {
+            JSONObject json = JSON.parseObject(config, JSONObject.class);
+            JSONArray array = json.getJSONArray("tarot");
+            List<Tarot> tarots = array.toJavaList(Tarot.class);
+            for(Tarot tarot:tarots){
+                if(tarot.getNum()==num){
+                    return tarot;
+                }
+            }
+        }
+        return null;
     }
 
 
