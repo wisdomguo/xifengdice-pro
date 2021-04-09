@@ -1,14 +1,14 @@
 spring:
   bot:
     plugin-list: # 配置插件列表（有序），如果插件返回0，继续执行剩余插件，如果插件返回1，终止剩余插件执行
-      - com.wisdom.xifeng.plugin.XFPlugin
-      - com.wisdom.xifeng.plugin.SetXFPlugin
-      - com.wisdom.xifeng.plugin.OtherPlugin
-      - com.wisdom.xifeng.plugin.HelpPlugin
-      - com.wisdom.xifeng.plugin.GroupPlugin
-      - com.wisdom.xifeng.plugin.DicePlugin
-      - com.wisdom.xifeng.plugin.CardPlugin
-      - com.wisdom.xifeng.plugin.LogPlugin # 日志插件
+      - com.wisdomguo.xifeng.plugin.XFPlugin
+      - com.wisdomguo.xifeng.plugin.SetXFPlugin
+      - com.wisdomguo.xifeng.plugin.OtherPlugin
+      - com.wisdomguo.xifeng.plugin.HelpPlugin
+      - com.wisdomguo.xifeng.plugin.GroupPlugin
+      - com.wisdomguo.xifeng.plugin.DicePlugin
+      - com.wisdomguo.xifeng.plugin.CardPlugin
+      - com.wisdomguo.xifeng.plugin.LogPlugin # 日志插件
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
