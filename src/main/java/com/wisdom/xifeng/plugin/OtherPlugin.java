@@ -186,10 +186,10 @@ public class OtherPlugin extends BotPlugin {
                 tarotList.put(key, tarot);
                 if(tarotList.get(key)>21){
                     Tarot tarotObj=getTarotJson(tarotList.get(key)-22);
-                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()).image("http://ali.gruiheng.com:8888/" + tarotStr + "-inversion.png"), false);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()+"\n").image("http://ali.gruiheng.com:8888/" + tarotStr + "-inversion.png"), false);
                 }else{
                     Tarot tarotObj=getTarotJson(tarotList.get(key));
-                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()).image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()+"\n").image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
                 }
 
             } else {
@@ -204,8 +204,8 @@ public class OtherPlugin extends BotPlugin {
 
             return MESSAGE_IGNORE;
         }
-        if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1 || msg.indexOf("。") != -1)) {
-            if (msg.startsWith(".addcard") || msg.startsWith("。addcard")) {
+        if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1)) {
+            if (msg.startsWith(".addcard") ) {
                 String[] card = msg.split(" ");
                 if (!atUserId.equals("")) {
                     userId = Long.valueOf(atUserId);
@@ -218,7 +218,7 @@ public class OtherPlugin extends BotPlugin {
                 }
                 return MESSAGE_IGNORE;
             }
-            if (msg.startsWith(".delcard") || msg.startsWith("。delcard")) {
+            if (msg.startsWith(".delcard")) {
                 String[] card = msg.split(" ");
                 boolean admin = false;
                 if ((event.getSender().getRole().equals("admin") || event.getSender().getRole().equals("owner"))) {
@@ -232,7 +232,7 @@ public class OtherPlugin extends BotPlugin {
                 return MESSAGE_IGNORE;
             }
 
-            if (msg.startsWith(".findcard") || msg.startsWith("。findcard")) {
+            if (msg.startsWith(".findcard") ) {
 
                 if (!atUserId.equals("")) {
                     userId = Long.valueOf(atUserId);
@@ -251,7 +251,7 @@ public class OtherPlugin extends BotPlugin {
                 return MESSAGE_IGNORE;
             }
 
-            if (msg.startsWith(".findallcard") || msg.startsWith("。findallcard")) {
+            if (msg.startsWith(".findallcard")) {
 
                 List<CardAddress> list = new ArrayList<>();
                 OnebotApi.GetGroupMemberListResp group = cq.getGroupMemberList(groupId);

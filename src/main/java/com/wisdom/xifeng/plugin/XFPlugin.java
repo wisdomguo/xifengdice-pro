@@ -2,15 +2,19 @@ package com.wisdom.xifeng.plugin;
 
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wisdom.xifeng.entity.BlackList;
+import com.wisdom.xifeng.service.blacklist.BlackListService;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.*;
@@ -29,6 +33,9 @@ import static java.util.regex.Pattern.*;
 @Component
 public class XFPlugin extends BotPlugin {
 
+    @Autowired
+    private BlackListService blackListService;
+
     @Override
     public int onFriendRequest(@NotNull Bot bot, @NotNull OnebotEvent.FriendRequestEvent event) {
         String com=event.getComment();
@@ -46,4 +53,52 @@ public class XFPlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int onGroupDecreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupDecreaseNoticeEvent event) {
+        Long groupId=event.getGroupId();
+        Long userId = event.getUserId();
+        Long operatorId = event.getOperatorId();
+        List<BlackList> blackLists=new ArrayList<>();
+        if(userId==bot.getLoginInfo().getUserId()){
+            int countOperator=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,operatorId));
+            if(countOperator==0){
+                BlackList operator=new BlackList(null,operatorId,2,"违规操作:踢出",new Date(),new Date(),0,0);
+                blackLists.add(operator);
+            }else{
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
+            }
+            int countGroup=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,groupId));
+            if(countGroup==0){
+                BlackList operator=new BlackList(null,groupId,1,"违规操作:踢出",new Date(),new Date(),0,0);
+                blackLists.add(operator);
+            }else{
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,groupId));
+            }
+            if(blackLists.size()>0){
+                blackListService.saveBatch(blackLists);
+            }
+            return MESSAGE_IGNORE;
+        }
+        return MESSAGE_IGNORE;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int onGroupBanNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupBanNoticeEvent event) {
+        Long groupId=event.getGroupId();
+        Long userId = event.getUserId();
+        Long operatorId = event.getOperatorId();
+        if(userId==bot.getLoginInfo().getUserId()){
+            int countOperator=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,operatorId));
+            if(countOperator==0){
+                BlackList operator=new BlackList(null,operatorId,2,"违规操作:踢出",new Date(),new Date(),0,0);
+                blackListService.save(operator);
+            }else{
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
+            }
+            return MESSAGE_IGNORE;
+        }
+        return MESSAGE_IGNORE;
+    }
 }
