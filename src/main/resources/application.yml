@@ -21,6 +21,6 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.wisdom.xifeng.entity
+  type-aliases-package: com.wisdomguo.xifeng.entity
 server:
   port: 8888

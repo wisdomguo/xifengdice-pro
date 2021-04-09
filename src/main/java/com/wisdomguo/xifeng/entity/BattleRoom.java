@@ -1,7 +1,7 @@
-package com.wisdom.xifeng.entity;
+package com.wisdomguo.xifeng.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.wisdom.xifeng.util.BaseEntity;
+import com.wisdomguo.xifeng.util.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
