@@ -1,11 +1,11 @@
-package com.wisdom.xifeng.service.blacklist.impl;
+package com.wisdomguo.xifeng.service.blacklist.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.wisdom.xifeng.dao.BlackListMapper;
-import com.wisdom.xifeng.dao.CharacterCocMaper;
-import com.wisdom.xifeng.entity.BlackList;
-import com.wisdom.xifeng.entity.CharacterCoC;
-import com.wisdom.xifeng.service.blacklist.BlackListService;
+import com.wisdomguo.xifeng.dao.BlackListMapper;
+import com.wisdomguo.xifeng.dao.CharacterCocMaper;
+import com.wisdomguo.xifeng.entity.BlackList;
+import com.wisdomguo.xifeng.entity.CharacterCoC;
+import com.wisdomguo.xifeng.service.blacklist.BlackListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

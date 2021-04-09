@@ -1,8 +1,8 @@
-package com.wisdom.xifeng.service.blacklist;
+package com.wisdomguo.xifeng.service.blacklist;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wisdom.xifeng.entity.BlackList;
-import com.wisdom.xifeng.entity.CharacterCoC;
+import com.wisdomguo.xifeng.entity.BlackList;
+import com.wisdomguo.xifeng.entity.CharacterCoC;
 
 /**
  * BlackListService

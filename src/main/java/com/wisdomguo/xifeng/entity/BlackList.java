@@ -1,4 +1,4 @@
-package com.wisdom.xifeng.entity;
+package com.wisdomguo.xifeng.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

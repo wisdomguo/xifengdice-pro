@@ -1,8 +1,8 @@
-package com.wisdom.xifeng.dao;
+package com.wisdomguo.xifeng.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wisdom.xifeng.entity.BlackList;
-import com.wisdom.xifeng.entity.CharacterCoC;
+import com.wisdomguo.xifeng.entity.BlackList;
+import com.wisdomguo.xifeng.entity.CharacterCoC;
 
 /**
  * BlackListMapper
