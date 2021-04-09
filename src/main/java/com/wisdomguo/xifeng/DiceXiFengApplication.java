@@ -12,7 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @EnableAspectJAutoProxy
 @SpringBootApplication
 @EnableScheduling
-@MapperScan("com.wisdom.xifeng.dao")
+@MapperScan("com.wisdomguo.xifeng.dao")
 public class DiceXiFengApplication {
 
     public static void main(String[] args) {

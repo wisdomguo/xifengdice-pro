@@ -3,8 +3,8 @@ package com.wisdomguo.xifeng.plugin;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdom.xifeng.entity.BlackList;
-import com.wisdom.xifeng.service.blacklist.BlackListService;
+import com.wisdomguo.xifeng.entity.BlackList;
+import com.wisdomguo.xifeng.service.blacklist.BlackListService;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
