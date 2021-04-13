@@ -9,6 +9,7 @@ import com.wisdomguo.xifeng.service.cardaddress.CardAddressSerivce;
 import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import com.wisdomguo.xifeng.util.HttpClientUtil;
+import com.wisdomguo.xifeng.util.ReportRead;
 import com.wisdomguo.xifeng.util.Tarot;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
@@ -61,6 +62,7 @@ public class OtherPlugin extends BotPlugin {
     private Map<String, Integer> jrrp = new HashMap();
     private Map<String, Integer> tarotList = new HashMap();
     private Map<String, Integer> magicList = new HashMap();
+    private Map<Long, ReportRead> repeatList = new HashMap();
 
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
@@ -104,14 +106,30 @@ public class OtherPlugin extends BotPlugin {
         }
         //获取发送者的所有信息
         String nickname=event.getSender().getNickname();
-        if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
-            QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
-            if (qqGroup.getXfOpen() == 1) {
-                return MESSAGE_IGNORE;
-            }
-        } else {
+        QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
+        if (qqGroup.getXfOpen() == 1 || qqGroup.getOtherOpen() == 1) {
             return MESSAGE_IGNORE;
         }
+
+        ReportRead reportRead= repeatList.get(groupId);
+        if(Objects.isNull(reportRead)){
+            ReportRead read=new ReportRead(userId,msg);
+            repeatList.put(groupId,read);
+        }else{
+            if(reportRead.getMessage().equals(msg)){
+                if(!reportRead.getUserId().equals(userId)){
+                    cq.sendGroupMsg(groupId, msg, false);
+                    repeatList.remove(groupId);
+                }else{
+                    ReportRead read=new ReportRead(userId,msg);
+                    repeatList.put(groupId,read);
+                }
+            }else{
+                ReportRead read=new ReportRead(userId,msg);
+                repeatList.put(groupId,read);
+            }
+        }
+
         if (msg.indexOf(".jrrp") != -1) {
 
             String key = String.valueOf(userId);

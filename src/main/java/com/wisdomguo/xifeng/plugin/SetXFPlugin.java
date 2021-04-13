@@ -92,7 +92,7 @@ public class SetXFPlugin extends BotPlugin {
             }
 
         } else {
-            if (msg.startsWith(".xf")) {
+            if (msg.startsWith(".xf")&& msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }
@@ -124,7 +124,7 @@ public class SetXFPlugin extends BotPlugin {
             }
 
         } else {
-            if (msg.startsWith(".dice")) {
+            if (msg.startsWith(".dice") && msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }

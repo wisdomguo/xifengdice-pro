@@ -1,7 +1,6 @@
 package com.wisdomguo.xifeng.plugin;
 
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wisdomguo.xifeng.entity.BlackList;
 import com.wisdomguo.xifeng.service.blacklist.BlackListService;
@@ -60,20 +59,20 @@ public class XFPlugin extends BotPlugin {
         Long userId = event.getUserId();
         Long operatorId = event.getOperatorId();
         List<BlackList> blackLists=new ArrayList<>();
-        if(userId==bot.getLoginInfo().getUserId()){
+        if(userId==bot.getLoginInfo().getUserId()&&operatorId!=0){
             int countOperator=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,operatorId));
             if(countOperator==0){
-                BlackList operator=new BlackList(null,operatorId,2,"违规操作:踢出",new Date(),new Date(),0,0);
+                BlackList operator=new BlackList(null,operatorId,2,"违规操作:踢出",new Date(),new Date(),1,0);
                 blackLists.add(operator);
             }else{
-                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,1).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
             }
             int countGroup=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,groupId));
             if(countGroup==0){
-                BlackList operator=new BlackList(null,groupId,1,"违规操作:踢出",new Date(),new Date(),0,0);
+                BlackList operator=new BlackList(null,groupId,1,"违规操作:踢出",new Date(),new Date(),1,0);
                 blackLists.add(operator);
             }else{
-                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,groupId));
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,1).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,groupId));
             }
             if(blackLists.size()>0){
                 blackListService.saveBatch(blackLists);
@@ -92,13 +91,27 @@ public class XFPlugin extends BotPlugin {
         if(userId==bot.getLoginInfo().getUserId()){
             int countOperator=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,operatorId));
             if(countOperator==0){
-                BlackList operator=new BlackList(null,operatorId,2,"违规操作:踢出",new Date(),new Date(),0,0);
+                BlackList operator=new BlackList(null,operatorId,2,"违规操作:禁言",new Date(),new Date(),1,0);
+                BlackList group=new BlackList(null,groupId,1,"违规操作:禁言",new Date(),new Date(),1,0);
                 blackListService.save(operator);
+                blackListService.save(group);
+                bot.setGroupLeave(groupId,true);
             }else{
-                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,0).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
+                blackListService.update(Wrappers.<BlackList>lambdaUpdate().set(BlackList::getIsDelete,1).set(BlackList::getForeverDelete,1).eq(BlackList::getQgId,operatorId));
             }
             return MESSAGE_IGNORE;
         }
         return MESSAGE_IGNORE;
+    }
+
+    @Override
+    public int onGroupIncreaseNotice(@NotNull Bot bot, @NotNull OnebotEvent.GroupIncreaseNoticeEvent event) {
+        Long groupId=event.getGroupId();
+        int count=blackListService.count(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getQgId,groupId).eq(BlackList::getIsDelete,1));
+        if(count!=0){
+            bot.sendGroupMsg(groupId,"检测到该群在黑名单上!惜风已申请退群",false);
+            bot.setGroupLeave(groupId,true);
+        }
+        return super.onGroupIncreaseNotice(bot, event);
     }
 }

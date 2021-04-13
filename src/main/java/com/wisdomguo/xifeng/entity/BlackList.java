@@ -36,7 +36,6 @@ public class BlackList implements Serializable {
 
     private Date updateTime;
 
-    @TableLogic
     private int isDelete;
 
     private int foreverDelete;
