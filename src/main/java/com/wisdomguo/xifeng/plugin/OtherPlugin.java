@@ -93,7 +93,9 @@ public class OtherPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         String atUserId = "";
         if (event.getMessageList().size() > 1) {
             for (OnebotBase.Message message : event.getMessageList()) {

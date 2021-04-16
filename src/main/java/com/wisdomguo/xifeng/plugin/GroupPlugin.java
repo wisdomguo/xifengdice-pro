@@ -50,7 +50,9 @@ public class GroupPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         String msg = event.getRawMessage().replaceAll("。",".");
         if ("更新完成".equals(msg) && userId == 1969077760L) {
             OnebotApi.GetGroupListResp grouplist = cq.getGroupList();
@@ -129,7 +131,9 @@ public class GroupPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
 
         String nickname = event.getSender().getNickname();
 

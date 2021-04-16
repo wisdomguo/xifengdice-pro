@@ -48,7 +48,9 @@ public class HelpPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         String msg = event.getRawMessage().replaceAll("。",".");
 
         if (msg.startsWith(".help")) {
@@ -113,7 +115,9 @@ public class HelpPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
          if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
              sb.append("\n.file help 角色卡地址功能");

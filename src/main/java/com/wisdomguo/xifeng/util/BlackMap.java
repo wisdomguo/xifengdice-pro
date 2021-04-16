@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.xml.ws.BindingType;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class BlackMap {
 
     @PostConstruct
     private void init(){
+        blackListMap=new HashMap<>();
         List<BlackList> blackLists=blackListService.list(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getType,2).eq(BlackList::getForeverDelete,1).eq(BlackList::getIsDelete,1));
         for(BlackList blackList:blackLists){
             blackListMap.put(blackList.getQgId(),blackList);

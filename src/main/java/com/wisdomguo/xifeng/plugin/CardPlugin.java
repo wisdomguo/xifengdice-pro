@@ -67,7 +67,9 @@ public class CardPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         //获取发送者的所有信息
         String nickname = event.getSender().getNickname();
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
