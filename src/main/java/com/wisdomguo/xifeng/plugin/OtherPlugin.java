@@ -7,10 +7,7 @@ import com.wisdomguo.xifeng.entity.CardAddress;
 import com.wisdomguo.xifeng.entity.QQGroup;
 import com.wisdomguo.xifeng.service.cardaddress.CardAddressSerivce;
 import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
-import com.wisdomguo.xifeng.util.BoolUtil;
-import com.wisdomguo.xifeng.util.HttpClientUtil;
-import com.wisdomguo.xifeng.util.ReportRead;
-import com.wisdomguo.xifeng.util.Tarot;
+import com.wisdomguo.xifeng.util.*;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotContainer;
@@ -96,6 +93,7 @@ public class OtherPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
         String atUserId = "";
         if (event.getMessageList().size() > 1) {
             for (OnebotBase.Message message : event.getMessageList()) {
