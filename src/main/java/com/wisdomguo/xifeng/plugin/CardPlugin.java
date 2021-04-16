@@ -9,6 +9,7 @@ import com.wisdomguo.xifeng.entity.SkillCoC;
 import com.wisdomguo.xifeng.service.charactercoc.CharacterCocService;
 import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
 import com.wisdomguo.xifeng.service.skillcoc.SkillCocService;
+import com.wisdomguo.xifeng.util.BlackMap;
 import com.wisdomguo.xifeng.util.BonusDice;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
@@ -66,6 +67,7 @@ public class CardPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
         //获取发送者的所有信息
         String nickname = event.getSender().getNickname();
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {

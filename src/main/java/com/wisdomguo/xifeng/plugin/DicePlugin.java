@@ -2,6 +2,7 @@ package com.wisdomguo.xifeng.plugin;
 
 import com.wisdomguo.xifeng.entity.QQGroup;
 import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
+import com.wisdomguo.xifeng.util.BlackMap;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
@@ -64,6 +65,7 @@ public class DicePlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId))return MESSAGE_BLOCK;
         //获取发送者的所有信息
 
         String nickname = event.getSender().getNickname();
