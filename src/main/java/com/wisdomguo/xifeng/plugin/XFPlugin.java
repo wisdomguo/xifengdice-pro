@@ -2,9 +2,9 @@ package com.wisdomguo.xifeng.plugin;
 
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.entity.BlackList;
-import com.wisdomguo.xifeng.service.blacklist.BlackListService;
-import com.wisdomguo.xifeng.util.BlackMap;
+import com.wisdomguo.xifeng.modules.blacklist.entity.BlackList;
+import com.wisdomguo.xifeng.modules.blacklist.service.BlackListService;
+import com.wisdomguo.xifeng.assist.BlackMap;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
@@ -15,9 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.regex.Pattern;
-
-import static java.util.regex.Pattern.*;
 
 
 /**
