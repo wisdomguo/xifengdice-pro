@@ -1,7 +1,8 @@
 package com.wisdomguo.xifeng.plugin;
 
-import com.wisdomguo.xifeng.entity.QQGroup;
-import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.assist.BlackMap;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class SetXFPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         //获取发送者的所有信息
 
         setXf(cq, msg, groupId, event);
@@ -92,7 +96,7 @@ public class SetXFPlugin extends BotPlugin {
             }
 
         } else {
-            if (msg.startsWith(".xf")) {
+            if (msg.startsWith(".xf")&& msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }
@@ -124,7 +128,7 @@ public class SetXFPlugin extends BotPlugin {
             }
 
         } else {
-            if (msg.startsWith(".dice")) {
+            if (msg.startsWith(".dice") && msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }

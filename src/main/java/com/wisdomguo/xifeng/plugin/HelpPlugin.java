@@ -1,7 +1,8 @@
 package com.wisdomguo.xifeng.plugin;
 
-import com.wisdomguo.xifeng.service.cardaddress.CardAddressSerivce;
-import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.cardaddress.service.CardAddressSerivce;
+import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.assist.BlackMap;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
@@ -47,6 +48,9 @@ public class HelpPlugin extends BotPlugin {
     public int onPrivateMessage(@NotNull Bot cq, @NotNull OnebotEvent.PrivateMessageEvent event) {
         // 获取 发送者QQ 和 消息内容
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         String msg = event.getRawMessage().replaceAll("。",".");
 
         if (msg.startsWith(".help")) {
@@ -111,7 +115,9 @@ public class HelpPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
-
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
          if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
              sb.append("\n.file help 角色卡地址功能");
@@ -122,7 +128,7 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n.card help  coc角色卡");
             sb.append("\n");
             sb.append("\n本次更新内容：");
-            sb.append("\n更新coc角色卡功能");
+            sb.append("\n复合骰/黑名单/复读功能");
             sb.append("\n下版本更新：复合骰");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;

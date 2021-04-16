@@ -3,13 +3,14 @@ package com.wisdomguo.xifeng.plugin;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.wisdomguo.xifeng.entity.CardAddress;
-import com.wisdomguo.xifeng.entity.QQGroup;
-import com.wisdomguo.xifeng.service.cardaddress.CardAddressSerivce;
-import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
-import com.wisdomguo.xifeng.util.BoolUtil;
-import com.wisdomguo.xifeng.util.HttpClientUtil;
-import com.wisdomguo.xifeng.util.Tarot;
+import com.wisdomguo.xifeng.assist.BlackMap;
+import com.wisdomguo.xifeng.assist.ReportRead;
+import com.wisdomguo.xifeng.assist.Tarot;
+import com.wisdomguo.xifeng.modules.cardaddress.entity.CardAddress;
+import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.cardaddress.service.CardAddressSerivce;
+import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.util.*;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotContainer;
@@ -61,6 +62,7 @@ public class OtherPlugin extends BotPlugin {
     private Map<String, Integer> jrrp = new HashMap();
     private Map<String, Integer> tarotList = new HashMap();
     private Map<String, Integer> magicList = new HashMap();
+    private Map<Long, ReportRead> repeatList = new HashMap();
 
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
@@ -94,6 +96,9 @@ public class OtherPlugin extends BotPlugin {
         long groupId = event.getGroupId();
         //获取发送者QQ
         long userId = event.getUserId();
+        if(BlackMap.returnBlackList(userId)) {
+            return MESSAGE_BLOCK;
+        }
         String atUserId = "";
         if (event.getMessageList().size() > 1) {
             for (OnebotBase.Message message : event.getMessageList()) {
@@ -104,14 +109,30 @@ public class OtherPlugin extends BotPlugin {
         }
         //获取发送者的所有信息
         String nickname=event.getSender().getNickname();
-        if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
-            QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
-            if (qqGroup.getXfOpen() == 1) {
-                return MESSAGE_IGNORE;
-            }
-        } else {
+        QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
+        if (qqGroup.getXfOpen() == 1 || qqGroup.getOtherOpen() == 1) {
             return MESSAGE_IGNORE;
         }
+
+        ReportRead reportRead= repeatList.get(groupId);
+        if(Objects.isNull(reportRead)){
+            ReportRead read=new ReportRead(userId,msg);
+            repeatList.put(groupId,read);
+        }else{
+            if(reportRead.getMessage().equals(msg)){
+                if(!reportRead.getUserId().equals(userId)){
+                    cq.sendGroupMsg(groupId, msg, false);
+                    repeatList.remove(groupId);
+                }else{
+                    ReportRead read=new ReportRead(userId,msg);
+                    repeatList.put(groupId,read);
+                }
+            }else{
+                ReportRead read=new ReportRead(userId,msg);
+                repeatList.put(groupId,read);
+            }
+        }
+
         if (msg.indexOf(".jrrp") != -1) {
 
             String key = String.valueOf(userId);
@@ -186,10 +207,10 @@ public class OtherPlugin extends BotPlugin {
                 tarotList.put(key, tarot);
                 if(tarotList.get(key)>21){
                     Tarot tarotObj=getTarotJson(tarotList.get(key)-22);
-                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()).image("http://ali.gruiheng.com:8888/" + tarotStr + "-inversion.png"), false);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【逆位】/"+tarotObj.getName()+"\n"+tarotObj.getNegative()+"\n").image("http://ali.gruiheng.com:8888/" + tarotStr + "-inversion.png"), false);
                 }else{
                     Tarot tarotObj=getTarotJson(tarotList.get(key));
-                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()).image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
+                    cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您抽取到的为:\n====================\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()+"\n").image("http://ali.gruiheng.com:8888/" + tarotStr + ".png"), false);
                 }
 
             } else {
@@ -204,8 +225,8 @@ public class OtherPlugin extends BotPlugin {
 
             return MESSAGE_IGNORE;
         }
-        if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1 || msg.indexOf("。") != -1)) {
-            if (msg.startsWith(".addcard") || msg.startsWith("。addcard")) {
+        if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1)) {
+            if (msg.startsWith(".addcard") ) {
                 String[] card = msg.split(" ");
                 if (!atUserId.equals("")) {
                     userId = Long.valueOf(atUserId);
@@ -218,7 +239,7 @@ public class OtherPlugin extends BotPlugin {
                 }
                 return MESSAGE_IGNORE;
             }
-            if (msg.startsWith(".delcard") || msg.startsWith("。delcard")) {
+            if (msg.startsWith(".delcard")) {
                 String[] card = msg.split(" ");
                 boolean admin = false;
                 if ((event.getSender().getRole().equals("admin") || event.getSender().getRole().equals("owner"))) {
@@ -232,7 +253,7 @@ public class OtherPlugin extends BotPlugin {
                 return MESSAGE_IGNORE;
             }
 
-            if (msg.startsWith(".findcard") || msg.startsWith("。findcard")) {
+            if (msg.startsWith(".findcard") ) {
 
                 if (!atUserId.equals("")) {
                     userId = Long.valueOf(atUserId);
@@ -251,7 +272,7 @@ public class OtherPlugin extends BotPlugin {
                 return MESSAGE_IGNORE;
             }
 
-            if (msg.startsWith(".findallcard") || msg.startsWith("。findallcard")) {
+            if (msg.startsWith(".findallcard")) {
 
                 List<CardAddress> list = new ArrayList<>();
                 OnebotApi.GetGroupMemberListResp group = cq.getGroupMemberList(groupId);
