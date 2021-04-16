@@ -1,5 +1,6 @@
 package com.wisdomguo.xifeng.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wisdomguo.xifeng.entity.QQGroup;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -9,7 +10,7 @@ import org.apache.ibatis.annotations.Update;
 import java.util.List;
 
 
-public interface QQGroupMapper {
+public interface QQGroupMapper extends BaseMapper<QQGroup> {
 
     @Select("SELECT * from qqgroup")
     List<QQGroup> selectAll();

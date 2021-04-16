@@ -19,8 +19,33 @@ spring:
   thymeleaf:
     cache: false
 
-mybatis:
-  mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.wisdomguo.xifeng.entity
+mybatis-plus:
+  #mapper路径
+  mapper-locations: classpath:mapper/**/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.wisdomguo.**.entity
+  #通用枚举扫描
+  typeEnumsPackage: com.wisdomguo.**.enums
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      #主键类型  0:"数据库ID自增", 1:"不操作", 2:"用户输入ID",3:"数字型snowflake", 4:"全局唯一ID UUID", 5:"字符串型snowflake";
+      id-type: ASSIGN_ID
+      #字段策略
+      insert-strategy: not_null
+      update-strategy: not_null
+      select-strategy: not_empty
+      #驼峰下划线转换
+      table-underline: true
+      # 逻辑删除配置
+      # 逻辑删除全局值（1表示已删除，这也是Mybatis Plus的默认配置）
+      logic-delete-value: 1
+      # 逻辑未删除全局值（0表示未删除，这也是Mybatis Plus的默认配置）
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
 server:
   port: 8888

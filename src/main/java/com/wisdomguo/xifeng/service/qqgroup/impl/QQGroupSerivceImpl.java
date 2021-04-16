@@ -1,5 +1,6 @@
 package com.wisdomguo.xifeng.service.qqgroup.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wisdomguo.xifeng.dao.QQGroupMapper;
 import com.wisdomguo.xifeng.entity.QQGroup;
 import com.wisdomguo.xifeng.service.qqgroup.QQGroupSerivce;
@@ -10,7 +11,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class QQGroupSerivceImpl implements QQGroupSerivce {
+public class QQGroupSerivceImpl extends ServiceImpl<QQGroupMapper,QQGroup> implements QQGroupSerivce {
 
     @Resource
     private QQGroupMapper qqGroupMapper;

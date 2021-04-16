@@ -1,5 +1,6 @@
 package com.wisdomguo.xifeng.service.cardaddress.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wisdomguo.xifeng.dao.*;
 import com.wisdomguo.xifeng.entity.*;
 import com.wisdomguo.xifeng.entity.CardAddress;
@@ -11,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class CardAddressSerivceImpl implements CardAddressSerivce {
+public class CardAddressSerivceImpl  extends ServiceImpl<CardAddressMapper, CardAddress> implements CardAddressSerivce {
 
     @Resource
     private CardAddressMapper cardAddressMapper;

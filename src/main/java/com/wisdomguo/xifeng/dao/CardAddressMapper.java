@@ -1,5 +1,6 @@
 package com.wisdomguo.xifeng.dao;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wisdomguo.xifeng.entity.*;
 import com.wisdomguo.xifeng.entity.CardAddress;
 import org.apache.ibatis.annotations.Delete;
@@ -10,7 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 
-public interface CardAddressMapper {
+public interface CardAddressMapper extends BaseMapper<CardAddress> {
 
     @Select("SELECT * from CardAddress where qq_id=#{qqid}")
     List<CardAddress> selectAllByQQID(@Param("qqid") String qqid);
