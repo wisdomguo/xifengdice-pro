@@ -115,21 +115,23 @@ public class OtherPlugin extends BotPlugin {
         }
 
         ReportRead reportRead= repeatList.get(groupId);
-        if(Objects.isNull(reportRead)){
-            ReportRead read=new ReportRead(userId,msg,1);
-            repeatList.put(groupId,read);
-        }else{
-            if(reportRead.getMessage().equals(msg) && reportRead.getCount().equals(1)){
-                if(!reportRead.getUserId().equals(userId)){
-                    reportRead.setCount(2);
-                    cq.sendGroupMsg(groupId, msg, false);
+        if(msg.indexOf(".jrrp")==-1 && msg.indexOf(".tarot")==-1 && msg.indexOf(".st")==-1 && msg.indexOf("help")==-1 && !msg.startsWith(".r")){
+            if(Objects.isNull(reportRead)){
+                ReportRead read=new ReportRead(userId,msg,1);
+                repeatList.put(groupId,read);
+            }else{
+                if(reportRead.getMessage().equals(msg)){
+                    if(!reportRead.getUserId().equals(userId) && reportRead.getCount().equals(1)){
+                        reportRead.setCount(2);
+                        repeatList.put(groupId,reportRead);
+                        cq.sendGroupMsg(groupId, msg, false);
+                    }else{
+                        repeatList.put(groupId,reportRead);
+                    }
                 }else{
                     ReportRead read=new ReportRead(userId,msg,1);
                     repeatList.put(groupId,read);
                 }
-            }else{
-                ReportRead read=new ReportRead(userId,msg,1);
-                repeatList.put(groupId,read);
             }
         }
 
