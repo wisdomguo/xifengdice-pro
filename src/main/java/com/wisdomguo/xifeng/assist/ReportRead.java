@@ -16,4 +16,5 @@ import lombok.NoArgsConstructor;
 public class ReportRead {
     private Long userId;
     private String message;
+    private Integer count;
 }

@@ -1,13 +1,13 @@
 spring:
   bot:
     plugin-list: # 配置插件列表（有序），如果插件返回0，继续执行剩余插件，如果插件返回1，终止剩余插件执行
-      - com.wisdomguo.xifeng.plugin.XFPlugin
-      - com.wisdomguo.xifeng.plugin.SetXFPlugin
-      - com.wisdomguo.xifeng.plugin.OtherPlugin
-      - com.wisdomguo.xifeng.plugin.HelpPlugin
-      - com.wisdomguo.xifeng.plugin.GroupPlugin
-      - com.wisdomguo.xifeng.plugin.DicePlugin
-      - com.wisdomguo.xifeng.plugin.CardPlugin
+      - com.wisdomguo.xifeng.plugin.XFPlugin #基础曹组哟
+      - com.wisdomguo.xifeng.plugin.SetXFPlugin #惜风设置
+      - com.wisdomguo.xifeng.plugin.OtherPlugin #其他功能
+      - com.wisdomguo.xifeng.plugin.HelpPlugin #帮助列表
+      - com.wisdomguo.xifeng.plugin.GroupPlugin #群管理功能
+      - com.wisdomguo.xifeng.plugin.DicePlugin #骰子功能
+      - com.wisdomguo.xifeng.plugin.CardPlugin #人物卡功能
       - com.wisdomguo.xifeng.plugin.LogPlugin # 日志插件
 
   datasource:

@@ -116,19 +116,19 @@ public class OtherPlugin extends BotPlugin {
 
         ReportRead reportRead= repeatList.get(groupId);
         if(Objects.isNull(reportRead)){
-            ReportRead read=new ReportRead(userId,msg);
+            ReportRead read=new ReportRead(userId,msg,1);
             repeatList.put(groupId,read);
         }else{
-            if(reportRead.getMessage().equals(msg)){
+            if(reportRead.getMessage().equals(msg) && reportRead.getCount().equals(1)){
                 if(!reportRead.getUserId().equals(userId)){
+                    reportRead.setCount(2);
                     cq.sendGroupMsg(groupId, msg, false);
-                    repeatList.remove(groupId);
                 }else{
-                    ReportRead read=new ReportRead(userId,msg);
+                    ReportRead read=new ReportRead(userId,msg,1);
                     repeatList.put(groupId,read);
                 }
             }else{
-                ReportRead read=new ReportRead(userId,msg);
+                ReportRead read=new ReportRead(userId,msg,1);
                 repeatList.put(groupId,read);
             }
         }
