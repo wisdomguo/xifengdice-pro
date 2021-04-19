@@ -193,7 +193,7 @@ public class DicePlugin extends BotPlugin {
                 builder.append(result);
                 for(int i=0;i<symbols.size();i++){
                     String symbol=symbols.get(i).replaceAll("[*]","X").replaceAll("/","÷");
-                    if (i == 0) {
+                    if (i == 0 && i!=symbols.size()-1) {
                         builder.append("="+dList.get(i)+symbol);
                     }else{
                         if(i==symbols.size()-1){

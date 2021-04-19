@@ -115,7 +115,7 @@ public class OtherPlugin extends BotPlugin {
         }
 
         ReportRead reportRead= repeatList.get(groupId);
-        if(msg.indexOf(".jrrp")==-1 && msg.indexOf(".tarot")==-1 && msg.indexOf(".st")==-1 && msg.indexOf("help")==-1 && !msg.startsWith(".r")){
+        if(msg.indexOf(".jrrp")==-1 && msg.indexOf(".tarot")==-1 && msg.indexOf(".st")==-1 && msg.indexOf("help")==-1 && !msg.startsWith(".r") && !msg.startsWith(".magic")){
             if(Objects.isNull(reportRead)){
                 ReportRead read=new ReportRead(userId,msg,1);
                 repeatList.put(groupId,read);
