@@ -71,6 +71,16 @@ public class HarukaScheduling implements Serializable {
     private Long sun;
 
     /**
+     * 素材写手
+     */
+    private Long material;
+
+    /**
+     * 动态写手
+     */
+    private Long dynamic;
+
+    /**
      * 排版
      */
     private Long typeSetting;
