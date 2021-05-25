@@ -92,6 +92,7 @@ public class OtherPlugin extends BotPlugin {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
         String msg = event.getRawMessage().replaceAll("。",".");
+        String oldMsg=msg;
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
@@ -116,6 +117,9 @@ public class OtherPlugin extends BotPlugin {
 
         ReportRead reportRead= repeatList.get(groupId);
         if(msg.indexOf(".jrrp")==-1 && msg.indexOf(".tarot")==-1 && msg.indexOf(".st")==-1 && msg.indexOf("help")==-1 && !msg.startsWith(".r") && !msg.startsWith(".magic")){
+            if(msg.startsWith("<image")){
+                msg="img:"+msg.split("-")[2];
+            }
             if(Objects.isNull(reportRead)){
                 ReportRead read=new ReportRead(userId,msg,1);
                 repeatList.put(groupId,read);
@@ -124,7 +128,11 @@ public class OtherPlugin extends BotPlugin {
                     if(!reportRead.getUserId().equals(userId) && reportRead.getCount().equals(1)){
                         reportRead.setCount(2);
                         repeatList.put(groupId,reportRead);
-                        cq.sendGroupMsg(groupId, msg, false);
+                        if(msg.startsWith("img:")){
+                            cq.sendGroupMsg(groupId, Msg.builder().image(oldMsg.replaceAll(" ","").replaceAll("<imageurl=\"","").replaceAll("\"/>","")), false);
+                        }else {
+                            cq.sendGroupMsg(groupId, msg, false);
+                        }
                     }else{
                         repeatList.put(groupId,reportRead);
                     }

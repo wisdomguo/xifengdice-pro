@@ -9,7 +9,7 @@ spring:
       - com.wisdomguo.xifeng.plugin.DicePlugin #骰子功能
       - com.wisdomguo.xifeng.plugin.CardPlugin #人物卡功能
       - com.wisdomguo.xifeng.plugin.LogPlugin # 日志插件
-      - com.wisdomguo.xifeng.plugin.HarukaBotPlugin # 日志插件
+      - com.wisdomguo.xifeng.plugin.HarukaBotPlugin # 排班系统
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver

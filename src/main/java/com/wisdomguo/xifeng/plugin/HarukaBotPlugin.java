@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotContainer;
 import net.lz1998.pbbot.bot.BotPlugin;
+import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotApi;
 import onebot.OnebotBase;
 import onebot.OnebotEvent;
@@ -54,7 +55,7 @@ public class HarukaBotPlugin extends BotPlugin {
         HarukaScheduling scheduling=new HarukaScheduling();
         scheduling.setDate(new Date());
         harukaSchedulingService.save(scheduling);
-        botInf.getBots().get(1515044906L).sendGroupMsg(1075109409L, "本周排版表已刷新" , false);
+        botInf.getBots().get(1515044906L).sendGroupMsg(1075109409L, Msg.builder().atAll().text("本周排版表已刷新") , false);
     }
 
     /**
@@ -382,7 +383,7 @@ public class HarukaBotPlugin extends BotPlugin {
         }
 
         if(msg.startsWith("#上周排班")){
-            HarukaScheduling harukaScheduling=harukaSchedulingService.getOne(Wrappers.<HarukaScheduling>lambdaQuery().orderByDesc(HarukaScheduling::getDate).last("limit 1,2"));
+            HarukaScheduling harukaScheduling=harukaSchedulingService.getOne(Wrappers.<HarukaScheduling>lambdaQuery().orderByDesc(HarukaScheduling::getDate).last("limit 1,1"));
             StringBuilder builder=new StringBuilder("上周排班如下:");
             if(harukaScheduling.getMon()!=null){
                 String nickname=cq.getGroupMemberInfo(groupId,harukaScheduling.getMon(),false).getCard();
