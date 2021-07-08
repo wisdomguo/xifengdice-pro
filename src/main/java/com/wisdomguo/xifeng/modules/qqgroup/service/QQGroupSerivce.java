@@ -6,6 +6,7 @@ import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
 import java.util.List;
 
 public interface QQGroupSerivce extends IService<QQGroup> {
+
     List<QQGroup> selectAll();
 
     QQGroup selectAllByID(String id);

@@ -74,7 +74,7 @@ public class CardPlugin extends BotPlugin {
         String nickname = event.getSender().getNickname();
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
-            if (qqGroup.getXfOpen() == 1) {
+            if (qqGroup.getXfOpen() == 1 || qqGroup.getDiceOpen() == 1 ) {
                 return MESSAGE_IGNORE;
             }
         } else {

@@ -1,11 +1,14 @@
 package com.wisdomguo.xifeng.plugin;
 
 import com.wisdomguo.xifeng.modules.cardaddress.service.CardAddressSerivce;
+import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
 import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
 import com.wisdomguo.xifeng.assist.BlackMap;
+import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
+import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -118,6 +121,25 @@ public class HelpPlugin extends BotPlugin {
         if(BlackMap.returnBlackList(userId)) {
             return MESSAGE_BLOCK;
         }
+
+        String atUserId = "";
+        if (event.getMessageList().size() > 1) {
+            for (OnebotBase.Message message : event.getMessageList()) {
+                if ("at".equals(message.getType())) {
+                    atUserId = message.getDataMap().get("qq");
+                }
+            }
+        }
+
+        if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
+            QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
+            if (qqGroup.getXfOpen() == 1 && !atUserId.equals("1515044906")) {
+                return MESSAGE_IGNORE;
+            }
+        } else {
+            return MESSAGE_IGNORE;
+        }
+
          if (msg.startsWith(".help")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
              sb.append("\n.file help 角色卡地址功能");
@@ -126,9 +148,11 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n.group help 群管理功能");
             sb.append("\n.luck help  娱乐功能①");
             sb.append("\n.card help  coc角色卡");
+            sb.append("\n惜风设计编程:\n不知归（1969077760）");
+            sb.append("\n惜风文案编辑:\n法露特（984641292）");
             sb.append("\n");
             sb.append("\n本次更新内容：");
-            sb.append("\n复合骰/黑名单/复读功能");
+            sb.append("\n每日功能开启关闭");
             sb.append("\n下版本更新：复合骰");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
@@ -196,6 +220,8 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n.xf off\t惜风待机");
         sb.append("\n.dice on\t骰子开启");
         sb.append("\n.dice off\t骰子待机");
+        sb.append("\n.daily on\t每日开启");
+        sb.append("\n.daily off\t每日关闭");
         return sb;
     }
 

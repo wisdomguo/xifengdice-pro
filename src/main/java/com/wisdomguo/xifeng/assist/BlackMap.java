@@ -21,22 +21,8 @@ import java.util.Objects;
 @Component
 public class BlackMap {
 
-    @Resource
-    private BlackListService blackListService;
-
-    private static Map<Long,BlackList> blackListMap;
-
-    @PostConstruct
-    private void init(){
-        blackListMap=new HashMap<>();
-        List<BlackList> blackLists=blackListService.list(Wrappers.<BlackList>lambdaQuery().eq(BlackList::getType,2).eq(BlackList::getForeverDelete,1).eq(BlackList::getIsDelete,1));
-        for(BlackList blackList:blackLists){
-            blackListMap.put(blackList.getQgId(),blackList);
-        }
-    }
-
     public static boolean returnBlackList(Long userId){
-        if(Objects.isNull(blackListMap.get(userId))){
+        if(Objects.isNull(AssemblyCache.blackLists.get(userId))){
             return false;
         }else {
             return true;
@@ -44,11 +30,11 @@ public class BlackMap {
     }
 
     public static void removeBlackList(Long userId){
-        blackListMap.remove(userId);
+        AssemblyCache.blackLists.remove(userId);
     }
 
     public static void addBlackList(BlackList blackList){
-        blackListMap.put(blackList.getQgId(),blackList);
+        AssemblyCache.blackLists.put(blackList.getQgId(),blackList);
     }
 
 }

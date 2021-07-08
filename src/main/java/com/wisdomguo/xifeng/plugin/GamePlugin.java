@@ -2,25 +2,20 @@ package com.wisdomguo.xifeng.plugin;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wisdomguo.xifeng.assist.BlackMap;
-import com.wisdomguo.xifeng.assist.Common;
 import com.wisdomguo.xifeng.modules.luckmute.entity.LuckMute;
 import com.wisdomguo.xifeng.modules.luckmute.service.LuckMuteService;
 import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
 import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
-import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
-import onebot.OnebotApi;
 import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -43,7 +38,7 @@ import java.util.Random;
  * @since 2021-5
  */
 @Component
-public class LuckMutePlugin extends BotPlugin {
+public class GamePlugin extends BotPlugin {
     /**
      * 收到私聊消息时会调用这个方法
      *

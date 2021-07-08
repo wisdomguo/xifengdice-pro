@@ -22,7 +22,7 @@ public class QQGroup implements Serializable {
      * 群组ID
      */
     @TableId
-    private String groupID;
+    private String groupId;
     /**
      * 骰子开关
      */

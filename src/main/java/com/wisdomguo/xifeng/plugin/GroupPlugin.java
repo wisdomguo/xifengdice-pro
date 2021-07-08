@@ -139,7 +139,7 @@ public class GroupPlugin extends BotPlugin {
 
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
-            if (qqGroup.getXfOpen() == 1) {
+            if (qqGroup.getXfOpen() == 1 || qqGroup.getOtherOpen() == 1 ) {
                 return MESSAGE_IGNORE;
             }
         } else {

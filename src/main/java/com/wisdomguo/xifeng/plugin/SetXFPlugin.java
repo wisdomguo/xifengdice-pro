@@ -52,15 +52,18 @@ public class SetXFPlugin extends BotPlugin {
         if(BlackMap.returnBlackList(userId)) {
             return MESSAGE_BLOCK;
         }
-        //获取发送者的所有信息
 
+        //设置惜风开启
         setXf(cq, msg, groupId, event);
         if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
             if (qqGroup.getXfOpen() == 1) {
                 return MESSAGE_IGNORE;
             } else {
+                //设置骰子开启
                 setDice(cq, msg, groupId, event);
+                //设置每日功能开启
+                setOther(cq, msg, groupId, event);
             }
         } else {
             return MESSAGE_IGNORE;
@@ -129,6 +132,38 @@ public class SetXFPlugin extends BotPlugin {
 
         } else {
             if (msg.startsWith(".dice") && msg.indexOf("help")==-1) {
+                cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
+            }
+        }
+    }
+
+    private void setOther(@NotNull Bot cq, String msg,long groupId, @NotNull OnebotEvent.GroupMessageEvent event) {
+        QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
+        if (msg.startsWith(".daily")&&(event.getSender().getRole().equals("owner") || event.getSender().getRole().equals("admin"))) {
+
+            if (msg.startsWith(".daily")) {
+                if (msg.equals(".daily off")) {
+//                    coutType = 1;
+                    if (qqGroup.getOtherOpen() == 1) {
+                        cq.sendGroupMsg(groupId, "宇宙真理检索系统尚未打开！", false);
+                    } else {
+                        qqGroupSerivce.updateOpenCloseOther(String.valueOf(groupId), 1);
+                        cq.sendGroupMsg(groupId, "宇宙真理检索系统已经关闭，需要时惜风会帮您重启！", false);
+                    }
+                } else if (msg.equals(".daily on")) {
+//                    coutType = 0;
+                    if (qqGroup.getOtherOpen() == 0) {
+                        cq.sendGroupMsg(groupId, "宇宙真理检索系统还未关闭！", false);
+                    } else {
+                        qqGroupSerivce.updateOpenCloseOther(String.valueOf(groupId), 0);
+                        cq.sendGroupMsg(groupId, "宇宙真理检索系统已经重启，惜风将持续为您服务！", false);
+                    }
+
+                }
+            }
+
+        } else {
+            if (msg.startsWith(".daily") && msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }
