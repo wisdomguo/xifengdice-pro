@@ -7,6 +7,8 @@ import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
+import net.lz1998.pbbot.utils.Msg;
+import onebot.OnebotApi;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
@@ -212,7 +214,9 @@ public class DicePlugin extends BotPlugin {
             // 调用API发送消息
             if (msg.startsWith(".rh")) {
                 //私发
-                cq.sendPrivateMsg(userId, builder.toString(), false);
+
+                cq.getApiSender().callApi(cq.getBotSession(),cq.getSelfId(), OnebotApi.SendMsgReq.newBuilder().setGroupId(groupId).setUserId(userId).addAllMessage(Msg.builder().text(builder.toString()).build()));
+//                cq.sendPrivateMsg(userId, builder.toString(), false);
             } else if (msg.startsWith(".r")) {
                 //群聊
                 cq.sendGroupMsg(groupId, nickname + "" + builder.toString(), false);

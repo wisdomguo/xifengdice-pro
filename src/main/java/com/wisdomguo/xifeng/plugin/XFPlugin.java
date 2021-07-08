@@ -44,11 +44,11 @@ public class XFPlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-    @Override
-    public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
-        bot.setGroupAddRequest(event.getFlag(),"",true,"");
-        return MESSAGE_IGNORE;
-    }
+//    @Override
+//    public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
+//        bot.setGroupAddRequest(event.getFlag(),"",true,"");
+//        return MESSAGE_IGNORE;
+//    }
 
 
     /**

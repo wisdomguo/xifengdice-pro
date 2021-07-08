@@ -232,7 +232,6 @@ public class OtherPlugin extends BotPlugin {
                     cq.sendGroupMsg(groupId, Msg.builder().text(nickname+"您今天已进行抽取过塔罗:\n【正位】/"+tarotObj.getName()+"\n"+tarotObj.getPositive()+"\n明天再来吧！"), false);
                 }
             }
-
             return MESSAGE_IGNORE;
         }
         if (msg.indexOf("card") != -1 && (msg.indexOf(".") != -1)) {
