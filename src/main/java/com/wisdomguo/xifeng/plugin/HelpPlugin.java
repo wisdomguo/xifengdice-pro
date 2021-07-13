@@ -146,14 +146,16 @@ public class HelpPlugin extends BotPlugin {
              sb.append("\n.xf help   惜风管理功能");
             sb.append("\n.dice help  骰娘系统功能");
             sb.append("\n.group help 群管理功能");
-            sb.append("\n.luck help  娱乐功能①");
+            sb.append("\n.luck help  每日功能");
             sb.append("\n.card help  coc角色卡");
+            sb.append("\n.game help  娱乐功能");
             sb.append("\n惜风设计编程:\n不知归（1969077760）");
             sb.append("\n惜风文案编辑:\n法露特（984641292）");
             sb.append("\n");
-            sb.append("\n本次更新内容：");
-            sb.append("\n每日功能开启关闭");
-            sb.append("\n下版本更新：复合骰");
+            sb.append("\n本次更新：星空探索及农场删档测试");
+            sb.append("\n下版本更新：星空正式版");
+            sb.append("\n由于清空星空背包本次全员补偿:\n100星屑,3星碎,1星币");
+            sb.append("\n下版本开始将不会清除用户数据");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -193,6 +195,12 @@ public class HelpPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
+        if (msg.startsWith(".game help")) {
+            StringBuffer sb = getGameHelpList();
+            cq.sendGroupMsg(groupId, sb.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+
         // 继续执行下一个插件
         return MESSAGE_IGNORE;
     }
@@ -222,6 +230,9 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n.dice off\t骰子待机");
         sb.append("\n.daily on\t每日开启");
         sb.append("\n.daily off\t每日关闭");
+        sb.append("\n.game on\t娱乐开启");
+        sb.append("\n.game off\t娱乐关闭");
+        sb.append("\n.xf dismiss\t惜风退群");
         return sb;
     }
 
@@ -274,6 +285,27 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n修改默认MP:   .stmp -1");
         sb.append("\nSan Check:   .sc 成功骰/失败骰");
         sb.append("\n技能判定:     .ra技能名");
+        return sb;
+    }
+
+    private StringBuffer getGameHelpList() {
+        StringBuffer sb = new StringBuffer("以下是惜风的娱乐功能：");
+        sb.append("\n星空探索:   进行一次星空探索");
+        sb.append("\n查看背包:   查看个人星空背包");
+        sb.append("\n星空排行:   查看星屑和星碎的整体排行");
+        sb.append("\n星屑排行:   查看星屑排行");
+        sb.append("\n星币排行:   查看用户的星币排行");
+        sb.append("\n星空转轮:   10星碎抽奖一次,可获得星币和种子奖励");
+        sb.append("\n种子口袋:   查看自己种子口袋");
+        sb.append("\n作物仓库:   查看自己已成熟的果实");
+        sb.append("\n我的田地:   查看自己正在种植的作物");
+        sb.append("\n农业商店:   查看可购买的作物列表");
+        sb.append("\n购买[作物名]:   购买商店里的作物");
+        sb.append("\n种植[作物名]:   在田地里种植该作物");
+        sb.append("\n收获[作物名]:   收获所有该种作物");
+        sb.append("\n出售[作物名][n]:   出售n个作物");
+        sb.append("\n星碎兑换[n]:   n*100星屑兑换成n星碎");
+        sb.append("\n备注:星币和星碎作物有种植失败概率");
         return sb;
     }
 

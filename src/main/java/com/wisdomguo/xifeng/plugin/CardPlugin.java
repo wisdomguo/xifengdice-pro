@@ -3,12 +3,12 @@ package com.wisdomguo.xifeng.plugin;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.modules.charactercoc.entity.CharacterCoC;
+import com.wisdomguo.xifeng.modules.dice.charactercoc.entity.CharacterCoC;
 import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.skillcoc.entity.SkillCoC;
-import com.wisdomguo.xifeng.modules.charactercoc.service.CharacterCocService;
+import com.wisdomguo.xifeng.modules.dice.skillcoc.entity.SkillCoC;
+import com.wisdomguo.xifeng.modules.dice.charactercoc.service.CharacterCocService;
 import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
-import com.wisdomguo.xifeng.modules.skillcoc.service.SkillCocService;
+import com.wisdomguo.xifeng.modules.dice.skillcoc.service.SkillCocService;
 import com.wisdomguo.xifeng.assist.BlackMap;
 import com.wisdomguo.xifeng.assist.BonusDice;
 import com.wisdomguo.xifeng.util.BoolUtil;
@@ -848,7 +848,7 @@ public class CardPlugin extends BotPlugin {
         } else if (skillResult >= 96) {
             builder.append(",大失败...当浩瀚星海都已燃尽黯淡的现在，这个世界…已经没有未来了吧......");
         } else if (skillResult <= ((skillValue + addition) / 5)) {
-            builder.append(",极限成功！真是稀奇呢。不，原来是你的努力点亮了那片璀璨的星光吗？");
+            builder.append(",极难成功！真是稀奇呢。不，原来是你的努力点亮了那片璀璨的星光吗？");
         } else if (skillResult <= ((skillValue + addition) / 2)) {
             builder.append(",困难成功！愿闪耀的启明星为你指引命运的方向。");
         } else if (skillResult <= (skillValue + addition)) {

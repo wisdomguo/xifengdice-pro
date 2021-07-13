@@ -10,11 +10,12 @@ spring:
       - com.wisdomguo.xifeng.plugin.CardPlugin #人物卡功能
       - com.wisdomguo.xifeng.plugin.LogPlugin # 日志插件
       - com.wisdomguo.xifeng.plugin.HarukaBotPlugin # 排班系统
+      - com.wisdomguo.xifeng.plugin.GamePlugin # 娱乐系统
 
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/wisdombot?useSSL=false
-    url: jdbc:mysql://47.113.231.84:3306/wisdombot?useSSL=false
+    url: jdbc:mysql://47.113.231.84:3306/wisdombot?useSSL=false&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 140610
   thymeleaf:

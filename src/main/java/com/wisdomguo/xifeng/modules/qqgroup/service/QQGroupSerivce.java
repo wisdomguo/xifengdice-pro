@@ -17,4 +17,6 @@ public interface QQGroupSerivce extends IService<QQGroup> {
 
     int updateOpenCloseOther(String id, int otheropen);
 
+    boolean updateOpenCloseGame(String id, int gameopen);
+
 }

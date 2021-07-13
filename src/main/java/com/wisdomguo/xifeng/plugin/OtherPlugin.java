@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wisdomguo.xifeng.assist.BlackMap;
+import com.wisdomguo.xifeng.assist.Disaster;
 import com.wisdomguo.xifeng.assist.ReportRead;
 import com.wisdomguo.xifeng.assist.Tarot;
 import com.wisdomguo.xifeng.modules.cardaddress.entity.CardAddress;
@@ -91,8 +92,8 @@ public class OtherPlugin extends BotPlugin {
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
-        String msg = event.getRawMessage().replaceAll("。",".");
-        String oldMsg=msg;
+        String oldMsg = event.getRawMessage().replaceAll("。",".").toLowerCase();
+        String msg = event.getRawMessage();
         //获取群号
         long groupId = event.getGroupId();
         //获取发送者QQ
@@ -116,7 +117,23 @@ public class OtherPlugin extends BotPlugin {
         }
 
         ReportRead reportRead= repeatList.get(groupId);
-        if(msg.indexOf(".jrrp")==-1 && msg.indexOf(".tarot")==-1 && msg.indexOf(".st")==-1 && msg.indexOf("help")==-1 && !msg.startsWith(".r") && !msg.startsWith(".magic")){
+        if(oldMsg.indexOf(".jrrp")==-1
+                && oldMsg.indexOf(".tarot")==-1
+                && oldMsg.indexOf(".st")==-1
+                && oldMsg.indexOf("help")==-1
+                && !oldMsg.startsWith(".r")
+                && !oldMsg.startsWith(".magic")
+                && !oldMsg.startsWith(".coc")
+                && !oldMsg.startsWith("星碎兑换")
+                && !oldMsg.startsWith("星空排行")
+                && !oldMsg.startsWith("星屑排行")
+                && !oldMsg.startsWith("星币排行")
+                && !oldMsg.startsWith("星空探索")
+                && !oldMsg.startsWith("星空转轮")
+                && !oldMsg.startsWith("种子口袋")
+                && !oldMsg.startsWith("作物仓库")
+                && !oldMsg.startsWith("我的田地")
+                && !oldMsg.startsWith("查看背包")){
             if(msg.startsWith("<image")){
                 msg="img:"+msg.split("-")[2];
             }
@@ -143,7 +160,7 @@ public class OtherPlugin extends BotPlugin {
             }
         }
 
-        if (msg.indexOf(".jrrp") != -1) {
+        if (oldMsg.indexOf(".jrrp") != -1) {
 
             String key = String.valueOf(userId);
 
@@ -168,7 +185,7 @@ public class OtherPlugin extends BotPlugin {
 
             return MESSAGE_IGNORE;
         }
-        if (msg.indexOf(".magic xf") != -1) {
+        if (oldMsg.indexOf(".magic xf") != -1) {
 
             String key = String.valueOf(userId);
 
@@ -324,6 +341,4 @@ public class OtherPlugin extends BotPlugin {
         }
         return null;
     }
-
-
 }

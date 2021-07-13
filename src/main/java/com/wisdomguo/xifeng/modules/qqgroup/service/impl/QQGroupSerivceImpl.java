@@ -1,5 +1,6 @@
 package com.wisdomguo.xifeng.modules.qqgroup.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wisdomguo.xifeng.assist.AssemblyCache;
 import com.wisdomguo.xifeng.modules.qqgroup.dao.QQGroupMapper;
@@ -28,8 +29,15 @@ public class QQGroupSerivceImpl extends ServiceImpl<QQGroupMapper, QQGroup> impl
             return qqGroup;
         } else {
             qqGroup = qqGroupMapper.selectAllByID(id);
-            AssemblyCache.qqGroups.put(qqGroup.getGroupId(), qqGroup);
-            return qqGroup;
+            if(qqGroup!=null){
+                AssemblyCache.qqGroups.put(qqGroup.getGroupId(), qqGroup);
+                return qqGroup;
+            }else{
+                qqGroup=new QQGroup(id,0,0,0,0,0);
+                this.qqGroupMapper.insert(qqGroup);
+                AssemblyCache.qqGroups.put(qqGroup.getGroupId(), qqGroup);
+                return qqGroup;
+            }
         }
 
     }
@@ -54,6 +62,14 @@ public class QQGroupSerivceImpl extends ServiceImpl<QQGroupMapper, QQGroup> impl
     @Override
     public int updateOpenCloseOther(String id, int otheropen) {
         int result = qqGroupMapper.updateOpenCloseOther(id, otheropen);
+        QQGroup qqGroup = qqGroupMapper.selectById(id);
+        AssemblyCache.qqGroups.put(qqGroup.getGroupId(), qqGroup);
+        return result;
+    }
+
+    @Override
+    public boolean updateOpenCloseGame(String id, int gameopen) {
+        boolean result= this.update(Wrappers.<QQGroup>lambdaUpdate().set(QQGroup::getGameOpen,gameopen).eq(QQGroup::getGroupId,id));
         QQGroup qqGroup = qqGroupMapper.selectById(id);
         AssemblyCache.qqGroups.put(qqGroup.getGroupId(), qqGroup);
         return result;

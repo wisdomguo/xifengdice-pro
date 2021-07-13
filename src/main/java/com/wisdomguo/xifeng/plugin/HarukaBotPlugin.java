@@ -1,21 +1,14 @@
 package com.wisdomguo.xifeng.plugin;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.assist.BlackMap;
-import com.wisdomguo.xifeng.modules.charactercoc.entity.CharacterCoC;
 import com.wisdomguo.xifeng.modules.harukascheduling.entity.HarukaScheduling;
 import com.wisdomguo.xifeng.modules.harukascheduling.service.HarukaSchedulingService;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
-import com.wisdomguo.xifeng.util.BoolUtil;
-import com.wisdomguo.xifeng.util.HttpClientUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotContainer;
 import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
-import onebot.OnebotApi;
 import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
@@ -26,9 +19,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 
 /**

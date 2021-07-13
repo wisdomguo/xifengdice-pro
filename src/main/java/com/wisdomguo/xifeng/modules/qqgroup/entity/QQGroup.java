@@ -32,7 +32,17 @@ public class QQGroup implements Serializable {
      */
     private int xfOpen;
     /**
-     * 其他开关
+     * 每日开关
      */
     private int otherOpen;
+
+    /**
+     * 娱乐开关
+     */
+    private int gameOpen;
+
+    /**
+     *
+     */
+    private int groupHelpOpen;
 }
