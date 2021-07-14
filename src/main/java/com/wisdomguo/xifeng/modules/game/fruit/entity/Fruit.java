@@ -30,4 +30,10 @@ public class Fruit implements Serializable {
 
     private Integer count;
 
+    public Fruit(Long qqId,Integer speciesId,Integer count){
+        this.qqId=qqId;
+        this.speciesId=speciesId;
+        this.count=count;
+    }
+
 }

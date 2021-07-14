@@ -1,6 +1,6 @@
 # Dice-XiFeng-Pro
 
-[![惜风跑团QQ群](https://img.shields.io/static/v1?label=QQ%E7%BE%A4&message=1090715815&color=blue)](https://jq.qq.com/?_wv=1027&k=B7Of3GMZ)
+[![QQ群](https://img.shields.io/static/v1?label=惜风跑团QQ群&message=1090715815&color=blue)](https://jq.qq.com/?_wv=1027&k=dcRlPRFX)
 
 欢迎使用惜风机器人，惜风是一款基于Spring-ProtobufBot框架并持续开发中的Java开源QQ机器人，主要应用场景为COC及DND跑团中。如果需要进行更新及功能实现，可以联系QQ1969077760
 

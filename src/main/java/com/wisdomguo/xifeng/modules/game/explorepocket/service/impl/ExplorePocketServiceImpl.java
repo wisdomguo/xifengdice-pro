@@ -41,7 +41,6 @@ public class ExplorePocketServiceImpl extends ServiceImpl<ExplorePocketMapper,Ex
 
     @Override
     public boolean changeStars(ExplorePocket explorePocket) {
-
         boolean result=this.update(Wrappers.<ExplorePocket>lambdaUpdate()
                 .set(ExplorePocket::getStardust, explorePocket.getStardust())
                 .set(ExplorePocket::getNickName, explorePocket.getNickName())

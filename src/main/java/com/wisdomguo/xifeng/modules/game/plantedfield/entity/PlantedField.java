@@ -55,4 +55,14 @@ public class PlantedField implements Serializable {
 
     @TableLogic
     private Integer delFlag;
+
+    public PlantedField(Long qqId,Integer serial,Integer type, Integer stage,Date plantingTime,Integer times,Integer delFlag){
+        this.qqId=qqId;
+        this.serial=serial;
+        this.type=type;
+        this.stage=stage;
+        this.plantingTime=plantingTime;
+        this.times=times;
+        this.delFlag=delFlag;
+    }
 }

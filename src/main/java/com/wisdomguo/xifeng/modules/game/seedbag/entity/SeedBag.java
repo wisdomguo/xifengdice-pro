@@ -41,4 +41,11 @@ public class SeedBag implements Serializable {
      * 种子数量
      */
     private Integer count;
+
+    public SeedBag(Long qqId,Integer speciesId,Integer type,Integer count){
+        this.qqId=qqId;
+        this.speciesId=speciesId;
+        this.type=type;
+        this.count=count;
+    }
 }
