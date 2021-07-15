@@ -1,19 +1,21 @@
 package com.wisdomguo.xifeng.assist;
 
-import com.wisdomguo.xifeng.modules.blacklist.entity.BlackList;
-import com.wisdomguo.xifeng.modules.blacklist.service.BlackListService;
+import com.wisdomguo.xifeng.modules.botset.blacklist.entity.BlackList;
+import com.wisdomguo.xifeng.modules.botset.blacklist.service.BlackListService;
 import com.wisdomguo.xifeng.modules.game.explorepocket.entity.ExplorePocket;
 import com.wisdomguo.xifeng.modules.game.explorepocket.service.ExplorePocketService;
-import com.wisdomguo.xifeng.modules.game.fruit.entity.Fruit;
-import com.wisdomguo.xifeng.modules.game.fruit.service.FruitService;
-import com.wisdomguo.xifeng.modules.game.plantedfield.entity.PlantedField;
-import com.wisdomguo.xifeng.modules.game.plantedfield.service.PlantedFieldService;
-import com.wisdomguo.xifeng.modules.game.seedbag.entity.SeedBag;
-import com.wisdomguo.xifeng.modules.game.seedbag.service.SeedBagService;
-import com.wisdomguo.xifeng.modules.game.seedspecies.entity.SeedSpecies;
-import com.wisdomguo.xifeng.modules.game.seedspecies.service.SeedSpeciesService;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.game.farm.fruit.entity.Fruit;
+import com.wisdomguo.xifeng.modules.game.farm.fruit.service.FruitService;
+import com.wisdomguo.xifeng.modules.game.farm.plantedfield.entity.PlantedField;
+import com.wisdomguo.xifeng.modules.game.farm.plantedfield.service.PlantedFieldService;
+import com.wisdomguo.xifeng.modules.game.farm.seedbag.entity.SeedBag;
+import com.wisdomguo.xifeng.modules.game.farm.seedbag.service.SeedBagService;
+import com.wisdomguo.xifeng.modules.game.farm.seedspecies.entity.SeedSpecies;
+import com.wisdomguo.xifeng.modules.game.farm.seedspecies.service.SeedSpeciesService;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.game.farm.userinfo.entity.FarmUserInfo;
+import com.wisdomguo.xifeng.modules.game.farm.userinfo.service.FarmUserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.ServletContextAware;
@@ -51,6 +53,9 @@ public class AssemblyCache implements ServletContextAware {
     @Autowired
     private FruitService fruitService;
 
+    @Autowired
+    private FarmUserInfoService userInfoService;
+
 
     //黑名单列表
     public static Map<Long,BlackList> blackLists=new HashMap<>();
@@ -66,6 +71,8 @@ public class AssemblyCache implements ServletContextAware {
     public static Map<Long, List<Fruit>> fruits=new HashMap<>();
     //种子类型
     public static Map<Integer, SeedSpecies> seedSpeciesMap=new HashMap<>();
+    //用户信息
+    public static Map<Long, FarmUserInfo> userInfos=new HashMap<>();
 
     @Override
     public void setServletContext(ServletContext servletContext) {
@@ -121,6 +128,11 @@ public class AssemblyCache implements ServletContextAware {
         //加载作物类型
         seedSpeciesService.list().stream().forEach(item->{
             seedSpeciesMap.put(item.getId(),item);
+        });
+
+        //加载作物类型
+        userInfoService.list().stream().forEach(item->{
+            userInfos.put(item.getQqId(),item);
         });
     }
 

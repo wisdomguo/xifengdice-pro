@@ -63,7 +63,7 @@ public class DateTimeUtil {
     /**
      * 计算分钟差
      */
-    public static long getTimeMinDifference(Date date) throws ParseException {
+    public static long getTimeMinDifference(Date date) {
         long between = System.currentTimeMillis() - date.getTime();
         long min = ((between / (60 * 1000)));
         return min;
@@ -71,7 +71,7 @@ public class DateTimeUtil {
     /**
      * 计算秒数差
      */
-    public static long getTimeSecondDifference(Date date) throws ParseException {
+    public static long getTimeSecondDifference(Date date) {
         long between = System.currentTimeMillis() - date.getTime();
         long s = (between / 1000);
         return s;

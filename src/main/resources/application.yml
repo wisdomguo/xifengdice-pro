@@ -15,7 +15,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
 #    url: jdbc:mysql://localhost:3306/wisdombot?useSSL=false
-    url: jdbc:mysql://47.113.231.84:3306/wisdombot?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://47.113.231.84:3306/wisdombot?useSSL=false&serverTimezone=GMT%2B8&useUnicode=true&characterEncoding=UTF-8
     username: root
     password: 140610
   thymeleaf:

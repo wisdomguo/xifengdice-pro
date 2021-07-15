@@ -4,13 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wisdomguo.xifeng.assist.BlackMap;
-import com.wisdomguo.xifeng.assist.Disaster;
 import com.wisdomguo.xifeng.assist.ReportRead;
 import com.wisdomguo.xifeng.assist.Tarot;
-import com.wisdomguo.xifeng.modules.cardaddress.entity.CardAddress;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.cardaddress.service.CardAddressSerivce;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.dice.cardaddress.entity.CardAddress;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.dice.cardaddress.service.CardAddressSerivce;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.service.QQGroupSerivce;
 import com.wisdomguo.xifeng.util.*;
 import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
@@ -26,6 +25,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.awt.event.ItemEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -146,7 +146,8 @@ public class OtherPlugin extends BotPlugin {
                         reportRead.setCount(2);
                         repeatList.put(groupId,reportRead);
                         if(msg.startsWith("img:")){
-                            cq.sendGroupMsg(groupId, Msg.builder().image(oldMsg.replaceAll(" ","").replaceAll("<imageurl=\"","").replaceAll("\"/>","")), false);
+                            String imgStr=event.getMessage(0).getDataMap().get("url");
+                            cq.sendGroupMsg(groupId, Msg.builder().image(imgStr), false);
                         }else {
                             cq.sendGroupMsg(groupId, msg, false);
                         }

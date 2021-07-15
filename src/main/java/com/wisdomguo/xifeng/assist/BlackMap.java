@@ -1,15 +1,8 @@
 package com.wisdomguo.xifeng.assist;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.modules.blacklist.entity.BlackList;
-import com.wisdomguo.xifeng.modules.blacklist.service.BlackListService;
+import com.wisdomguo.xifeng.modules.botset.blacklist.entity.BlackList;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**

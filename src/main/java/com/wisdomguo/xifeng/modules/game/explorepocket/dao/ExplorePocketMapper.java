@@ -2,7 +2,6 @@ package com.wisdomguo.xifeng.modules.game.explorepocket.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wisdomguo.xifeng.modules.game.explorepocket.entity.ExplorePocket;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;

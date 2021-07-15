@@ -7,20 +7,21 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wisdomguo.xifeng.assist.AssemblyCache;
 import com.wisdomguo.xifeng.assist.BlackMap;
 import com.wisdomguo.xifeng.assist.Disaster;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.service.QQGroupSerivce;
 import com.wisdomguo.xifeng.modules.game.explorepocket.entity.ExplorePocket;
 import com.wisdomguo.xifeng.modules.game.explorepocket.service.ExplorePocketService;
-import com.wisdomguo.xifeng.modules.game.fruit.entity.Fruit;
-import com.wisdomguo.xifeng.modules.game.fruit.service.FruitService;
-import com.wisdomguo.xifeng.modules.game.plantedfield.entity.PlantedField;
-import com.wisdomguo.xifeng.modules.game.plantedfield.service.PlantedFieldService;
-import com.wisdomguo.xifeng.modules.game.seedbag.entity.SeedBag;
-import com.wisdomguo.xifeng.modules.game.seedbag.service.SeedBagService;
-import com.wisdomguo.xifeng.modules.game.seedspecies.entity.SeedSpecies;
-import com.wisdomguo.xifeng.modules.game.seedspecies.service.SeedSpeciesService;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.game.farm.fruit.entity.Fruit;
+import com.wisdomguo.xifeng.modules.game.farm.fruit.service.FruitService;
+import com.wisdomguo.xifeng.modules.game.farm.plantedfield.entity.PlantedField;
+import com.wisdomguo.xifeng.modules.game.farm.plantedfield.service.PlantedFieldService;
+import com.wisdomguo.xifeng.modules.game.farm.seedbag.entity.SeedBag;
+import com.wisdomguo.xifeng.modules.game.farm.seedbag.service.SeedBagService;
+import com.wisdomguo.xifeng.modules.game.farm.seedspecies.entity.SeedSpecies;
+import com.wisdomguo.xifeng.modules.game.farm.seedspecies.service.SeedSpeciesService;
+import com.wisdomguo.xifeng.modules.game.farm.userinfo.entity.FarmUserInfo;
+import com.wisdomguo.xifeng.modules.game.farm.userinfo.service.FarmUserInfoService;
 import com.wisdomguo.xifeng.util.DateTimeUtil;
-import lombok.SneakyThrows;
 import net.lz1998.pbbot.bot.Bot;
 import net.lz1998.pbbot.bot.BotPlugin;
 import net.lz1998.pbbot.utils.Msg;
@@ -33,11 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -77,7 +80,15 @@ public class GamePlugin extends BotPlugin {
     @Resource
     private PlantedFieldService plantedFieldService;
 
+    @Resource
+    private FarmUserInfoService farmUserInfoService;
+
+    @Resource
+    private GamePlugin thisGame;
+
     private Map<Long, Date> expMap = new HashMap<>();
+
+    private Map<Long, LocalDateTime> transfer = new HashMap<>();
 
     SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
@@ -88,9 +99,8 @@ public class GamePlugin extends BotPlugin {
      * @param event 事件对象，用于获取消息内容、群号、发送者QQ等
      * @return 是否继续调用下一个插件，IGNORE表示继续，BLOCK表示不继续
      */
-    @SneakyThrows
+
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public int onGroupMessage(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event) {
         // 获取 消息内容 群号 发送者QQ
         //获取消息内容
@@ -125,73 +135,99 @@ public class GamePlugin extends BotPlugin {
                 }
             }
         }
+
         String nickname = cq.getGroupMemberInfo(groupId, userId, false).getCard();
         if (nickname.equals("")) {
             nickname = cq.getGroupMemberInfo(groupId, userId, false).getNickname();
         }
 
         //星空探索
-        if (starrySkyExploration(cq, event, msg, groupId, userId, nickname)) {
+        if (thisGame.starrySkyExploration(cq, event, msg, groupId, userId, nickname)) {
             return MESSAGE_IGNORE;
         }
 
         //查看背包
-        if (selectBackpack(cq, event, msg, groupId, userId)) {
+        if (thisGame.selectBackpack(cq, event, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //兑换星碎
-        if (exchangeStarFragment(cq, event, msg, groupId, userId, nickname)) {
+        if (thisGame.exchangeStarFragment(cq, event, msg, groupId, userId, nickname)) {
             return MESSAGE_IGNORE;
         }
 
         //查看排行
-        if (selectRanking(cq, msg, groupId)) {
+        if (thisGame.selectRanking(cq, msg, groupId)) {
             return MESSAGE_IGNORE;
         }
 
         //星空抽奖
-        if (luckLottery(cq, event, msg, groupId, userId)) {
+        if (thisGame.luckLottery(cq, event, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //查看种子袋
-        if (selectSeedBag(cq, msg, groupId, userId)) {
+        if (thisGame.selectSeedBag(cq, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //查看仓库
-        if (selectWarehouse(cq, msg, groupId, userId)) {
+        if (thisGame.selectWarehouse(cq, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //查看田地
-        if (selectField(cq, msg, groupId, userId)) {
+        if (thisGame.selectField(cq, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //农业商店
-        if (agricultureStore(cq, msg, groupId)) {
+        if (thisGame.agricultureStore(cq, msg, groupId)) {
             return MESSAGE_IGNORE;
         }
 
         //购买种子
-        if (buySeeds(cq, event, msg, groupId, userId)) {
+        if (thisGame.buySeeds(cq, event, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //种植果实
-        if (plantingSeeds(cq, msg, groupId, userId)) {
+        if (thisGame.plantingSeeds(cq, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //收获果实
-        if (rewardSeeds(cq, msg, groupId, userId)) {
+        if (thisGame.rewardSeeds(cq, msg, groupId, userId)) {
             return MESSAGE_IGNORE;
         }
 
         //出售果实
-        if (sellSeeds(cq, event, msg, groupId, userId)) {
+        if (thisGame.sellSeeds(cq, event, msg, groupId, userId)) {
+            return MESSAGE_IGNORE;
+        }
+
+        //恢复田地
+        if (thisGame.restoreFarm(cq, event, msg, groupId, userId)) {
+            return MESSAGE_IGNORE;
+        }
+
+        //购买田地
+        if (thisGame.buyFarm(cq, event, msg, groupId, userId)) {
+            return MESSAGE_IGNORE;
+        }
+
+        //使用加速卡(随机
+        if (thisGame.accelerate(cq, msg, groupId, userId)) {
+            return MESSAGE_IGNORE;
+        }
+
+        //随机偷菜
+        if (thisGame.stealFruit(cq, event, msg, groupId, userId)){
+            return MESSAGE_IGNORE;
+        }
+
+        //转账
+        if (transfer(cq, event, msg, groupId, userId)){
             return MESSAGE_IGNORE;
         }
 
@@ -199,14 +235,212 @@ public class GamePlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-    private boolean starrySkyExploration(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) throws ParseException {
+    private boolean transfer(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+        if (msg.startsWith("转账") ||msg.startsWith("转账@") ){
+            ExplorePocket from=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+                String atQQID="";
+                String count="0";
+                for (OnebotBase.Message message : event.getMessageList()) {
+                    if ("at".equals(message.getType())) {
+                        atQQID=message.getDataMap().get("qq");
+                    }
+                    if(!"at".equals(message.getType()) && !message.getDataMap().get("text").equals("转账")){
+                        count=message.getDataMap().get("text").split("，")[1].replaceAll(" ","");
+                    }
+                }
+                if(from.getStardust()>=Integer.valueOf(count)){
+                    //判断是否有转账账号
+                    if(atQQID.equals("")){
+                        from.setStardust(from.getStardust()-Integer.valueOf(count));
+                        explorePocketService.changeStars(from);
+                        cq.sendGroupMsg(groupId,"格式错误，那这些星屑惜风就用来给艾露买好吃的了~",false);
+                    }else{
+                        //判断8小时内有没有转账
+                        if(transfer.get(userId)==null || transfer.get(userId).plusHours(8).isBefore(LocalDateTime.now())){
+                            //判断转账是不是超过500
+                            if(Integer.valueOf(count)>500){
+                                cq.sendGroupMsg(groupId,"单次转账不能超过500哦，记得多余的星屑用来送给有需要的人吧！",false);
+                            }else{
+                                from.setStardust(from.getStardust()-Integer.valueOf(count));
+                                ExplorePocket to=explorePocketService.findByQqId(Long.valueOf(atQQID),"");
+                                to.setStardust(to.getStardust()+Integer.valueOf(count));
+                                explorePocketService.changeStars(from);
+                                explorePocketService.changeStars(to);
+                                transfer.put(userId,LocalDateTime.now());
+                                cq.sendGroupMsg(groupId,"您已转账"+count+"给"+to.getNickName()+"（"+to.getQqId()+"）",false);
+                            }
+                        }else{
+                            cq.sendGroupMsg(groupId,"请不要频繁转账哦，上次转账时间为"+transfer.get(userId).toString().replaceAll("T"," ")+"，请至少间隔8小时！",false);
+                        }
+                    }
+                }else {
+                    cq.sendGroupMsg(groupId,"您的星屑不够这么多啦~",false);
+                }
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean accelerate(@NotNull Bot cq, String msg, long groupId, long userId) {
+        if (msg.equals("随机加速")) {
+            FarmUserInfo farmUserInfo=farmUserInfoService.findByQqId(userId);
+            if(farmUserInfo.getQuickenCount()>0){
+                //寻找所有该编号下程序
+                List<PlantedField> plantedFields = plantedFieldService.findByQqId(userId);
+                List<PlantedField> newPlante=new ArrayList<>();
+                plantedFields.stream().forEach(item -> {
+                    //判断是否成熟
+                    if (DateTimeUtil.getTimeSecondDifference(item.getPlantingTime()) < (AssemblyCache.seedSpeciesMap.get(item.getSerial()).getDuration() * 3600)) {
+                        newPlante.add(item);
+                    }
+                });
+                Random r=new Random();
+                int result=r.nextInt(newPlante.size());
+                PlantedField field=newPlante.get(result);
+                field.setPlantingTime(Date.from(LocalDateTime.now().minusHours(AssemblyCache.seedSpeciesMap.get(field.getSerial()).getDuration()).atZone(ZoneId.systemDefault()).toInstant()));
+                plantedFieldService.changeField(field);
+                farmUserInfo.setQuickenCount(farmUserInfo.getQuickenCount()-1);
+                farmUserInfoService.changeUserInfo(farmUserInfo);
+                cq.sendGroupMsg(groupId,"您的"+AssemblyCache.seedSpeciesMap.get(field.getSerial()).getName()+"已经可以收获了，快去看看吧！",false);
+            }else{
+                cq.sendGroupMsg(groupId,"您的加速卡不足，请等待管理员发放吧！",false);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean stealFruit(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+        if (msg.startsWith("随机偷菜")) {
+            List<FarmUserInfo> farmUserInfos=farmUserInfoService.list();
+            FarmUserInfo farmUserInfo=farmUserInfoService.findByQqId(userId);
+            StringBuilder builder=new StringBuilder();
+            if(farmUserInfo.getStealCount()>0){
+                boolean attempt=farmUserInfos.stream().anyMatch(item -> {
+                    if(item.getProtectionTime().isBefore(LocalDateTime.now().minusHours(8)) && item.getQqId()!=userId){
+                        List<PlantedField> fields=plantedFieldService.findByQqId(item.getQqId());
+                        AtomicReference<PlantedField> plantedField= new AtomicReference<>(new PlantedField());
+                        boolean have=fields.stream().anyMatch(field->{
+                            if(DateTimeUtil.getTimeSecondDifference(field.getPlantingTime()) >= (AssemblyCache.seedSpeciesMap.get(field.getSerial()).getDuration() * 3600)){
+                                plantedField.set(field);
+                                return true;
+                            }
+                            return false;
+                        });
+                        if(have){
+                            Random random=new Random();
+                            int result=random.nextInt(100)+1;
+                            farmUserInfo.setStealCount(farmUserInfo.getStealCount()-1);
+                            farmUserInfoService.changeUserInfo(farmUserInfo);
+                            if(result<15){
+                                int stardust=AssemblyCache.seedSpeciesMap.get(plantedField.get().getSerial()).getMaxSell()/5;
+                                ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+                                explorePocket.setStardust(explorePocket.getStardust()+stardust);
+                                builder.append("您成功偷走了（"+item.getQqId()+"）的"+AssemblyCache.seedSpeciesMap.get(plantedField.get().getSerial()).getName()+"，偷偷卖掉后获得了"+stardust+"星屑！");
+                            }else if(result<90){
+                                builder.append("偷菜失败~下次再试吧！");
+                            }else{
+                                Random random1=new Random();
+                                int result1=random1.nextInt(1000)+1;
+                                ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+                                explorePocket.setStardust(explorePocket.getStardust()-(result1));
+                                builder.append("您偷菜的时候被惜风的小艾露发现了~小艾露偷偷的从你的口袋里拿出了"+result1+"星屑！");
+                            }
+                            return true;
+                        }
+                    }
+                   return false;
+                });
+                if(!attempt){
+                    cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("暂时没有成熟的蔬菜可以偷，请稍后再来吧！"),false);
+                }else{
+                    cq.sendGroupMsg(groupId,Msg.builder().at(userId).text(builder.toString()),false);
+                }
+            }else{
+                cq.sendGroupMsg(groupId,"您今天已经没有偷菜次数了！",false);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean buyFarm(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+        if (msg.startsWith("购买田地")) {
+            //查询个人背包
+            ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+            //查询田地
+            FarmUserInfo farmUserInfo= farmUserInfoService.findByQqId(userId);
+            //判断能否购买
+            if(farmUserInfo.getFieldCount()<6){
+                //判断星币是否够
+                if(explorePocket.getStars()>=farmUserInfo.getFieldCount()){
+                    explorePocket.setStars(explorePocket.getStars()-farmUserInfo.getFieldCount());
+                    explorePocketService.changeStars(explorePocket);
+                    farmUserInfo.setFieldCount(farmUserInfo.getFieldCount()+1);
+                    farmUserInfoService.changeUserInfo(farmUserInfo);
+                    cq.sendGroupMsg(groupId,"惜风已为您开辟一块新的田地，快去种点什么吧！",true);
+                }else{
+                    cq.sendGroupMsg(groupId,"您的星币不足购买新的田地了哦！攒"+farmUserInfo.getFieldCount()+"星币再来吧。",true);
+                }
+            }else{
+                cq.sendGroupMsg(groupId,"您已经拥有了6块田地...不要贪心不足了~",true);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean restoreFarm(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+        if (msg.startsWith("修复田地")) {
+            int count=0;
+            String newMsg=msg.replaceAll("修复田地","");
+            ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+            FarmUserInfo farmUserInfo= farmUserInfoService.findByQqId(userId);
+            if ("".equals(newMsg)){
+                count=1;
+            }else{
+                count=Integer.valueOf(newMsg);
+            }
+            if(farmUserInfo.getDisasterCount()>=count){
+                if(explorePocket.getStardust()<1000*count){
+                    explorePocket.setStardust(explorePocket.getStardust()-(1000*count));
+                    explorePocketService.changeStars(explorePocket);
+                    farmUserInfo.setDisasterCount(farmUserInfo.getDisasterCount()-count);
+                    farmUserInfoService.changeUserInfo(farmUserInfo);
+                    cq.sendGroupMsg(groupId,"惜风已经对您的土地使用了恢复术，已帮您恢复"+count+"块田地。",true);
+                }else{
+                    cq.sendGroupMsg(groupId,"您的星屑不足"+(1000*count)+"，无法修复！",true);
+                }
+            }else{
+                cq.sendGroupMsg(groupId,"您没有那么多田地需要修复哦",true);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public boolean starrySkyExploration(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) {
         if (msg.equals("星空探索")) {
             //探索结果
             int skillResult = 0;
             StringBuilder builder = new StringBuilder();
             Random random = new Random();
             skillResult = random.nextInt(100) + 1;
-            builder.append(nickname + "穿过时空门来到了无尽星空开始探索...\n—————————\n" + nickname + "进行探索检定：1D100=" + skillResult + "/50");
+            //查看背包
+            ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
+            int determination=50;
+            if(explorePocket.getStarFragment()*100+explorePocket.getStardust()<500 && explorePocket.getStars()==0){
+                determination=80;
+            }else if((explorePocket.getStarFragment()*100+explorePocket.getStardust())<1000){
+                determination=70;
+            }
+            builder.append(nickname + "穿过时空门来到了无尽星空开始探索...\n—————————\n" + nickname + "进行探索检定：1D100=" + skillResult + "/"+determination);
             if (expMap.get(userId) != null) {
                 long time = DateTimeUtil.getTimeMinDifference(expMap.get(userId));
                 if (time < 30) {
@@ -215,8 +449,7 @@ public class GamePlugin extends BotPlugin {
                 }
             }
             expMap.put(userId, new Date());
-            //查看背包
-            ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
+
             //判断结果
             if (skillResult == 1) {
                 explorePocket.setStarFragment(explorePocket.getStarFragment() + 1);
@@ -224,13 +457,13 @@ public class GamePlugin extends BotPlugin {
             } else if (skillResult <= 5) {
                 explorePocket.setStardust(explorePocket.getStardust() + 50);
                 builder.append("大成功！\n你在一颗不知名的星球上挖出了宝箱，获得了星屑+50");
-            } else if (skillResult <= 10) {
+            } else if (skillResult <= determination/5) {
                 explorePocket.setStardust(explorePocket.getStardust() + 20);
                 builder.append("极难成功！\n你找到一块奇特的宝石，卖掉它换来了星屑+20");
-            } else if (skillResult <= 25) {
+            } else if (skillResult <= determination/2) {
                 explorePocket.setStardust(explorePocket.getStardust() + 10);
                 builder.append("困难成功！\n你找到一张古老的轴卷，卖掉它换来了星屑+10");
-            } else if (skillResult <= 50) {
+            } else if (skillResult <= determination) {
                 explorePocket.setStardust(explorePocket.getStardust() + 5);
                 builder.append("成功\n你找到一块破旧的怀表，卖掉它换来了星屑+5");
             } else if (skillResult <= 95) {
@@ -256,7 +489,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean selectBackpack(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean selectBackpack(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.equals("查看背包")) {
             //查看背包
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
@@ -276,7 +510,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean exchangeStarFragment(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean exchangeStarFragment(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) {
         if (msg.startsWith("星碎兑换")) {
             String countString = msg.replaceAll("星碎兑换", "");
             if (countString.equals("")) {
@@ -300,7 +535,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean selectRanking(@NotNull Bot cq, String msg, long groupId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean selectRanking(@NotNull Bot cq, String msg, long groupId) {
         if (msg.indexOf("排行") != -1) {
             if (msg.equals("星空排行")) {
                 StringBuilder builder = new StringBuilder();
@@ -337,7 +573,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean luckLottery(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean luckLottery(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.equals("星空转轮")) {
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
             if (explorePocket.getStarFragment() >= 10) {
@@ -418,7 +655,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean selectSeedBag(@NotNull Bot cq, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean selectSeedBag(@NotNull Bot cq, String msg, long groupId, long userId) {
         if (msg.equals("种子口袋")) {
             List<SeedBag> list = seedBagService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
@@ -428,7 +666,7 @@ public class GamePlugin extends BotPlugin {
                     builder.append("您的种子口袋中有：");
                     list.stream().forEach(item -> {
                         if (item.getCount() != 0) {
-                            builder.append("\n" + AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getName() + "种子：" + item.getCount() + AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getUnit());
+                            builder.append("\n" + AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getName() + "种子：" + item.getCount() + "颗");
                             count.getAndIncrement();
                         }
                     });
@@ -448,7 +686,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean selectWarehouse(@NotNull Bot cq, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean selectWarehouse(@NotNull Bot cq, String msg, long groupId, long userId) {
         if (msg.equals("作物仓库")) {
             List<Fruit> list = fruitService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
@@ -478,7 +717,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean selectField(@NotNull Bot cq, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean selectField(@NotNull Bot cq, String msg, long groupId, long userId) {
         if (msg.equals("我的田地")) {
             List<PlantedField> list = plantedFieldService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
@@ -486,13 +726,9 @@ public class GamePlugin extends BotPlugin {
                 if (list.size() > 0) {
                     builder.append("种植的作物有：");
                     list.stream().forEach(item -> {
-                        try {
-                            builder.append("\n" + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getName() + " 种植时间：" + DateTimeUtil.getTimeSecondDifference(item.getPlantingTime()));
-                            builder.append("\n收获时间：" + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getDuration() * 60 * 60 + "");
-                            builder.append("\n已收获次数：" + item.getTimes() + "\n");
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        builder.append("\n" + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getName() + " 种植时间：" + DateTimeUtil.getTimeSecondDifference(item.getPlantingTime()));
+                        builder.append("\n收获时间：" + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getDuration() * 60 * 60 + "");
+                        builder.append("\n已收获次数：" + item.getTimes() + "\n");
                     });
                 } else {
                     builder.append("您的田地里一片荒凉，快去种点什么吧！");
@@ -500,13 +736,17 @@ public class GamePlugin extends BotPlugin {
             } else {
                 builder.append("您的田地里一片荒凉，快去种点什么吧！");
             }
+            if(farmUserInfoService.findByQqId(userId).getDisasterCount()>0){
+                builder.append("\n请注意！您有"+ farmUserInfoService.findByQqId(userId).getDisasterCount()+"块土地已遭受灾害无法使用！\n请尽快缴纳修复费用！");
+            }
             cq.sendGroupMsg(groupId, Msg.builder().at(userId).text(builder.toString()), false);
             return true;
         }
         return false;
     }
 
-    private boolean agricultureStore(@NotNull Bot cq, String msg, long groupId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean agricultureStore(@NotNull Bot cq, String msg, long groupId) {
         if (msg.equals("农业商店")) {
             List<SeedSpecies> list = seedSpeciesService.list();
             StringBuilder builder = new StringBuilder("");
@@ -537,7 +777,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean buySeeds(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean buySeeds(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         //判断是否是购买
         if (msg.startsWith("购买")) {
             //获取种子种类
@@ -604,7 +845,8 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean plantingSeeds(@NotNull Bot cq, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean plantingSeeds(@NotNull Bot cq, String msg, long groupId, long userId) {
         //判断是否是种植
         if (msg.startsWith("种植")) {
             StringBuilder builder = new StringBuilder();
@@ -624,7 +866,7 @@ public class GamePlugin extends BotPlugin {
                         //判断是否有该类型种子,或者数量足够
                         if (seedBag.getSpeciesId().equals(item.getId()) && seedBag.getCount() > 0) {
                             //判断是否有空闲田地
-                            if (plantedFieldService.findByQqId(userId).size() < 1) {
+                            if (plantedFieldService.findByQqId(userId).size() <(farmUserInfoService.findByQqId(userId).getFieldCount()- farmUserInfoService.findByQqId(userId).getDisasterCount())) {
                                 seedBag.setCount(-1);
                                 seedBagService.changeSeed(seedBag);
                                 PlantedField field = new PlantedField(userId,item.getId(),item.getType(),0,new Date(),0,0);
@@ -658,10 +900,12 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    private boolean rewardSeeds(@NotNull Bot cq, String msg, long groupId, long userId) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean rewardSeeds(@NotNull Bot cq, String msg, long groupId, long userId) {
         //判断是否是收获
         if (msg.startsWith("收获")) {
             StringBuilder builder = new StringBuilder();
+            StringBuilder builder2 = new StringBuilder();
             //获取收获种类
             String finalMsg = msg.replaceAll("收获", "");
             List<SeedSpecies> seedSpecies = seedSpeciesService.list();
@@ -682,7 +926,6 @@ public class GamePlugin extends BotPlugin {
             StringBuilder successCount = new StringBuilder();
 
             plantedFields.stream().forEach(item -> {
-                try {
                     //判断是否成熟
                     if (DateTimeUtil.getTimeSecondDifference(item.getPlantingTime()) >= (AssemblyCache.seedSpeciesMap.get(item.getSerial()).getDuration() * 3600)) {
                         //是否是受灾种类
@@ -715,12 +958,16 @@ public class GamePlugin extends BotPlugin {
                         if (AssemblyCache.seedSpeciesMap.get(item.getSerial()).getTimes() > (item.getTimes() + 1)) {
                             plantedFieldService.changeField(item);
                         } else {
+                            Random random=new Random();
+                            if (random.nextInt(100)+1>95){
+                                FarmUserInfo userInfo= farmUserInfoService.findByQqId(userId);
+                                userInfo.setDisasterCount(userInfo.getDisasterCount()+1);
+                                farmUserInfoService.changeUserInfo(userInfo);
+                                builder2.append("警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
+                            }
                             plantedFieldService.deleteField(item);
                         }
                     }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
             });
             //判断收获结果
             if (fruits.size() > 0) {
@@ -743,14 +990,15 @@ public class GamePlugin extends BotPlugin {
                     builder.append("还没有成熟的" + finalMsg + "作物哦！");
                 }
             }
-            cq.sendGroupMsg(groupId, Msg.builder().at(userId).text(builder.toString()), false);
+            cq.sendGroupMsg(groupId, Msg.builder().at(userId).text(builder.toString()).text(builder2.toString()), false);
             return true;
         }
         return false;
     }
 
     //出售种子
-    private boolean sellSeeds(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+    @Transactional(rollbackFor = Exception.class)
+    public boolean sellSeeds(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.startsWith("出售")) {
             //获取背包
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId,event.getSender().getNickname());
@@ -810,13 +1058,18 @@ public class GamePlugin extends BotPlugin {
      * @return Disaster
      * @throws IOException
      */
-    public Disaster getDisasterJson() throws IOException {
+    public Disaster getDisasterJson()  {
         String path = "/disaster.json";
         InputStream config = getClass().getResourceAsStream(path);
         if (config == null) {
             throw new RuntimeException("读取文件失败");
         } else {
-            JSONObject json = JSON.parseObject(config, JSONObject.class);
+            JSONObject json = null;
+            try {
+                json = JSON.parseObject(config, JSONObject.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             JSONArray array = json.getJSONArray("disaster");
             List<Disaster> disasters = array.toJavaList(Disaster.class);
             Random random = new Random();
@@ -829,5 +1082,60 @@ public class GamePlugin extends BotPlugin {
         }
         return null;
     }
-
+//测试方法
+//    public static void main(String[] args) {
+//        int c1=0;
+//        int c2=0;
+//        int c3=0;
+//        int c4=0;
+//        int c5=0;
+//        for(int j=0;j<100000000;j++){
+//            Random random = new Random();
+//            List<Integer> results = new ArrayList<>();
+//            //获取五次抽奖计数
+//            for (int i = 0; i < 5; i++) {
+//                int result = random.nextInt(100) + 1;
+//                results.add(result);
+//            }
+//            AtomicInteger rankList = new AtomicInteger(1);
+//            AtomicInteger exchange = new AtomicInteger();
+//            results.stream().anyMatch(item -> {
+//                //是否是第一次
+//                if (rankList.getAndIncrement() == 1) {
+//                    //第一次是否极限大成功
+//                    if (item == 1) {
+//                        exchange.addAndGet(100);
+//                        return true;
+//                    } else {
+//                        exchange.addAndGet(20);
+//                    }
+//                } else {
+//                    if (item < 20) {
+//                        exchange.addAndGet(20);
+//                    } else if (item < 30) {
+//                        exchange.addAndGet(20);
+//                    } else if (item < 40) {
+//                        exchange.addAndGet(15);
+//                    } else if (item < 60) {
+//                        exchange.addAndGet(10);
+//                    } else {
+//                        exchange.addAndGet(5);
+//                    }
+//                }
+//                return false;
+//            });
+//            if (exchange.intValue() == 100) {
+//                c1++;
+//               } else if (exchange.intValue() > 80) {
+//                c2++;
+//                } else if (exchange.intValue() > 60) {
+//                c3++;
+//                } else if (exchange.intValue() > 40) {
+//                c4++;
+//                } else {
+//                c5++;
+//            }
+//        }
+//        System.out.println(c1/100000000.0+" "+c2/100000000.0+" "+c3/100000000.0+" "+c4/100000000.0+" "+c5/100000000.0+" ");
+//    }
 }

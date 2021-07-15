@@ -2,8 +2,8 @@ package com.wisdomguo.xifeng.plugin;
 
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.modules.blacklist.entity.BlackList;
-import com.wisdomguo.xifeng.modules.blacklist.service.BlackListService;
+import com.wisdomguo.xifeng.modules.botset.blacklist.entity.BlackList;
+import com.wisdomguo.xifeng.modules.botset.blacklist.service.BlackListService;
 import com.wisdomguo.xifeng.assist.BlackMap;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;

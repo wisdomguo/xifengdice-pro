@@ -1,8 +1,8 @@
 package com.wisdomguo.xifeng.plugin;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wisdomguo.xifeng.modules.harukascheduling.entity.HarukaScheduling;
-import com.wisdomguo.xifeng.modules.harukascheduling.service.HarukaSchedulingService;
+import com.wisdomguo.xifeng.modules.other.harukascheduling.entity.HarukaScheduling;
+import com.wisdomguo.xifeng.modules.other.harukascheduling.service.HarukaSchedulingService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.lz1998.pbbot.bot.Bot;

@@ -1,7 +1,7 @@
 package com.wisdomguo.xifeng.plugin;
 
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.service.QQGroupSerivce;
 import com.wisdomguo.xifeng.assist.BlackMap;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
@@ -201,7 +201,7 @@ public class SetXFPlugin extends BotPlugin {
             }
 
         } else {
-            if (msg.startsWith(".daily") && msg.indexOf("help")==-1) {
+            if (msg.startsWith(".game") && msg.indexOf("help")==-1) {
                 cq.sendGroupMsg(groupId, "只有管理员和群主可以进行操作哦！", false);
             }
         }

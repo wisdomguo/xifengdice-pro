@@ -1,8 +1,8 @@
 package com.wisdomguo.xifeng.plugin;
 
-import com.wisdomguo.xifeng.modules.cardaddress.service.CardAddressSerivce;
-import com.wisdomguo.xifeng.modules.qqgroup.entity.QQGroup;
-import com.wisdomguo.xifeng.modules.qqgroup.service.QQGroupSerivce;
+import com.wisdomguo.xifeng.modules.dice.cardaddress.service.CardAddressSerivce;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.entity.QQGroup;
+import com.wisdomguo.xifeng.modules.botset.qqgroup.service.QQGroupSerivce;
 import com.wisdomguo.xifeng.assist.BlackMap;
 import com.wisdomguo.xifeng.util.BoolUtil;
 import lombok.SneakyThrows;
