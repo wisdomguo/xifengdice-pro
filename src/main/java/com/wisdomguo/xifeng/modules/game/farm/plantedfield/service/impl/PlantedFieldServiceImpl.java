@@ -30,15 +30,15 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      */
     @Override
     public List<PlantedField> findByQqId(Long qqId) {
-        List<PlantedField> plantedFields= AssemblyCache.plantedFields.get(qqId);
-        if (plantedFields!=null){
+        List<PlantedField> plantedFields = AssemblyCache.plantedFields.get(qqId);
+        if (plantedFields != null) {
             return plantedFields;
-        }else {
-            plantedFields=this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId,qqId));
-            if(plantedFields!=null){
-                AssemblyCache.plantedFields.put(qqId,plantedFields);
+        } else {
+            plantedFields = this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, qqId));
+            if (plantedFields != null) {
+                AssemblyCache.plantedFields.put(qqId, plantedFields);
                 return plantedFields;
-            }else{
+            } else {
                 return new ArrayList<>();
             }
         }
@@ -52,19 +52,36 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      */
     @Override
     public boolean changeField(PlantedField plantedField) {
-        PlantedField oldField=this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
-                .eq(PlantedField::getQqId,plantedField.getQqId())
-                .eq(PlantedField::getType,plantedField.getType())
-                .eq(PlantedField::getSerial,plantedField.getSerial()));
-        if(oldField!=null){
-            oldField.setTimes(oldField.getTimes()+1);
+        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
+                .eq(PlantedField::getQqId, plantedField.getQqId())
+                .eq(PlantedField::getType, plantedField.getType())
+                .eq(PlantedField::getSerial, plantedField.getSerial()));
+        if (oldField != null) {
+            oldField.setTimes(oldField.getTimes() + 1);
             oldField.setPlantingTime(new Date());
             this.baseMapper.updateById(oldField);
-        }else{
+        } else {
             this.baseMapper.insert(plantedField);
         }
-        List<PlantedField> plantedFields=this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId,plantedField.getQqId()));
-        AssemblyCache.plantedFields.put(plantedField.getQqId(),plantedFields);
+        List<PlantedField> plantedFields = this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, plantedField.getQqId()));
+        AssemblyCache.plantedFields.put(plantedField.getQqId(), plantedFields);
+        return true;
+    }
+
+    @Override
+    public boolean accelerate(PlantedField plantedField) {
+        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
+                .eq(PlantedField::getQqId, plantedField.getQqId())
+                .eq(PlantedField::getType, plantedField.getType())
+                .eq(PlantedField::getSerial, plantedField.getSerial()));
+        if (oldField != null) {
+            oldField.setPlantingTime(plantedField.getPlantingTime());
+            this.baseMapper.updateById(oldField);
+        } else {
+            this.baseMapper.insert(plantedField);
+        }
+        List<PlantedField> plantedFields = this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, plantedField.getQqId()));
+        AssemblyCache.plantedFields.put(plantedField.getQqId(), plantedFields);
         return true;
     }
 
@@ -76,17 +93,17 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      */
     @Override
     public boolean deleteField(PlantedField plantedField) {
-        PlantedField oldField=this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
-                .eq(PlantedField::getQqId,plantedField.getQqId())
-                .eq(PlantedField::getType,plantedField.getType())
-                .eq(PlantedField::getSerial,plantedField.getSerial()));
-        if(oldField!=null){
+        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
+                .eq(PlantedField::getQqId, plantedField.getQqId())
+                .eq(PlantedField::getType, plantedField.getType())
+                .eq(PlantedField::getSerial, plantedField.getSerial()));
+        if (oldField != null) {
             this.baseMapper.deleteById(oldField.getId());
-        }else{
+        } else {
             return false;
         }
-        List<PlantedField> plantedFields=this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId,plantedField.getQqId()));
-        AssemblyCache.plantedFields.put(plantedField.getQqId(),plantedFields);
+        List<PlantedField> plantedFields = this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, plantedField.getQqId()));
+        AssemblyCache.plantedFields.put(plantedField.getQqId(), plantedFields);
         return true;
     }
 }

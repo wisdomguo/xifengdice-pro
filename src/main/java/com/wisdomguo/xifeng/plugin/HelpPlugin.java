@@ -153,8 +153,11 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n惜风文案编辑:\n法露特（984641292）");
             sb.append("\n");
             sb.append("\n本次更新：星空探索及农场删档测试");
-            sb.append("\n下版本更新：星空正式版");
-            sb.append("\n由于清空星空背包本次全员补偿:\n100星屑,3星碎,1星币");
+            sb.append("\n1.开放了两块田地，田地可以购买了，最多6块");
+            sb.append("\n2.由于星空的侵蚀，田地也会随机被破坏，需要大家及时修补");
+            sb.append("\n3.转账功能开放了，可以进行转账了");
+            sb.append("\n下版本更新：星空农场正式版");
+            sb.append("\n由于清空星空背包本次全员补偿:\n500星屑,3星碎,1星币,一张随机加速卡");
             sb.append("\n下版本开始将不会清除用户数据");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
@@ -305,7 +308,13 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n收获[作物名]:   收获所有该种作物");
         sb.append("\n出售[作物名][n]:   出售n个作物");
         sb.append("\n星碎兑换[n]:   n*100星屑兑换成n星碎");
-        sb.append("\n备注:星币和星碎作物有种植失败概率");
+        sb.append("\n修复田地[n]:   n*1000星屑修复n块损坏的田地");
+        sb.append("\n购置田地:      花费n-1星币购买第n块田地");
+        sb.append("\n随机加速:      使用加速卡随机加速一块田地");
+        sb.append("\n随机偷菜:      随机偷菜，一天3次机会");
+        sb.append("\n转账@用户，n:   给别人转账不超过500（n）的星屑");
+        sb.append("\n备注1:星币和星碎作物有种植失败概率");
+        sb.append("\n备注2:发送“星空系统详解”查看农场功能详细介绍");
         return sb;
     }
 

@@ -39,7 +39,7 @@ public class FarmUserInfoServiceImpl extends ServiceImpl<FarmUserInfoMapper, Far
                 AssemblyCache.userInfos.put(qqId, userInfos);
                 return userInfos;
             }else{
-                FarmUserInfo userInfo=new FarmUserInfo(qqId,2,0,1,0, LocalDateTime.now());
+                FarmUserInfo userInfo=new FarmUserInfo(qqId,2,0,1,3, LocalDateTime.now());
                 this.baseMapper.insert(userInfo);
                 AssemblyCache.userInfos.put(qqId,userInfo);
                 return userInfo;

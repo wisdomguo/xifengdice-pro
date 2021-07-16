@@ -28,6 +28,7 @@ import net.lz1998.pbbot.utils.Msg;
 import onebot.OnebotBase;
 import onebot.OnebotEvent;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,6 +92,11 @@ public class GamePlugin extends BotPlugin {
     private Map<Long, LocalDateTime> transfer = new HashMap<>();
 
     SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
+    public void jrrpClear() {
+        farmUserInfoService.update(Wrappers.<FarmUserInfo>lambdaUpdate().set(FarmUserInfo::getStealCount,3));
+    }
 
     /**
      * 收到群消息时会调用这个方法
@@ -291,7 +297,30 @@ public class GamePlugin extends BotPlugin {
             });
             cq.sendGroupMsg(groupId, "请输入正确的转账数量", false);
         }
-
+        if (msg.equals("星空系统详解")) {
+            StringBuilder builder=new StringBuilder("星空系统详解：");
+            builder.append("\n1.星空探索：");
+            builder.append("\n    作为一个调查员，我的的征途当然是星辰大海（不是），星空探索是我们前期获取货币星屑以及星碎的主要手段之一，每30分钟可以进行一次，投出成功\\困难成功\\极难成功\\大成功时分别获得5\\10\\20\\50点星屑；大失败时扣除50点星屑，若身上不够50点星屑则不扣除，如果当投出点数为1点时则获得1点星碎，点数100时则扣除身上全部星屑。");
+            builder.append("\n2.基本货币：");
+            builder.append("\n    星空系统系统的基本货币有三种，分别是星币，星碎，星屑，星碎可以通过“星碎兑换”消耗100点星屑兑换1点星碎，而星币只能通过“星空转轮”抽奖获得。如果想要查看自己的货币，则可以通过“查看背包”进行查看");
+            builder.append("\n3.星空转轮：");
+            builder.append("\n    星空转轮是星空系统中唯一能够获得星币的方式，星空转轮需要消耗10点星碎启动。星空转轮会进行5次投点，每次投点点数越少得分就越高。其抽奖概率如下");
+            builder.append("\n    5星币大奖 1.5%\n    1星币 9.6%\n    星碎级种子 45%\n    星屑级种子 39%\n    谢谢参与 3%");
+            cq.sendGroupMsg(groupId,builder.toString(),false);
+            builder=new StringBuilder("");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            builder.append("3.作物系统：");
+            builder.append("\n    我们可以通过“农业商店”或者“星空转轮”来获取作物种子。作物种子可以通过“种子口袋”来查看，并通过“种植[作物名]”来种植作物（不需要打中括号），然后可以通过“我的田地”来查看当前种植的作物，当作物成熟之后就可以“收获[作物名]”收获并进行出售了（指令出售[作物名][n]）");
+            builder.append("\n    初始的时候我们会免费为玩家开放两块田地，当然也可以获取新田地，每块新田地都需要花费当前田地块数的星币进行购买，田地上限为六块。");
+            builder.append("\n    我们也随机的发放一些加速卷来帮助玩家更快的收获作物，并且收获的作物也可以在“作物仓库”中进行查看。");
+            builder.append("\n    当然我们的星空系统中还有一些其他的功能，只不过这些功能就需要大家自己的努力探索了，那么让我们开始自己的第一次探险吧！");
+            cq.sendGroupMsg(groupId,builder.toString(),false);
+            return MESSAGE_IGNORE;
+        }
         // 继续执行下一个插件
         return MESSAGE_IGNORE;
     }
@@ -361,7 +390,7 @@ public class GamePlugin extends BotPlugin {
                 int result = r.nextInt(newPlante.size());
                 PlantedField field = newPlante.get(result);
                 field.setPlantingTime(Date.from(LocalDateTime.now().minusHours(AssemblyCache.seedSpeciesMap.get(field.getSerial()).getDuration()).atZone(ZoneId.systemDefault()).toInstant()));
-                plantedFieldService.changeField(field);
+                plantedFieldService.accelerate(field);
                 farmUserInfo.setQuickenCount(farmUserInfo.getQuickenCount() - 1);
                 farmUserInfoService.changeUserInfo(farmUserInfo);
                 cq.sendGroupMsg(groupId, "您的" + AssemblyCache.seedSpeciesMap.get(field.getSerial()).getName() + "已经可以收获了，快去看看吧！", false);
@@ -381,7 +410,7 @@ public class GamePlugin extends BotPlugin {
             StringBuilder builder = new StringBuilder();
             if (farmUserInfo.getStealCount() > 0) {
                 boolean attempt = farmUserInfos.stream().anyMatch(item -> {
-                    if (item.getProtectionTime().isBefore(LocalDateTime.now().minusHours(8)) && item.getQqId() != userId) {
+//                    if (item.getProtectionTime().isBefore(LocalDateTime.now().minusHours(8)) && item.getQqId() != userId) {
                         List<PlantedField> fields = plantedFieldService.findByQqId(item.getQqId());
                         AtomicReference<PlantedField> plantedField = new AtomicReference<>(new PlantedField());
                         boolean have = fields.stream().anyMatch(field -> {
@@ -396,8 +425,8 @@ public class GamePlugin extends BotPlugin {
                             int result = random.nextInt(100) + 1;
                             farmUserInfo.setStealCount(farmUserInfo.getStealCount() - 1);
                             farmUserInfoService.changeUserInfo(farmUserInfo);
-                            if (result < 15) {
-                                int stardust = AssemblyCache.seedSpeciesMap.get(plantedField.get().getSerial()).getMaxSell() / 5;
+                            if (result < 40) {
+                                int stardust = AssemblyCache.seedSpeciesMap.get(plantedField.get().getSerial()).getMaxSell() / 3;
                                 ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
                                 explorePocket.setStardust(explorePocket.getStardust() + stardust);
                                 builder.append("您成功偷走了（" + item.getQqId() + "）的" + AssemblyCache.seedSpeciesMap.get(plantedField.get().getSerial()).getName() + "，偷偷卖掉后获得了" + stardust + "星屑！");
@@ -412,7 +441,7 @@ public class GamePlugin extends BotPlugin {
                             }
                             return true;
                         }
-                    }
+//                    }
                     return false;
                 });
                 if (!attempt) {
@@ -431,7 +460,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean buyFarm(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
-        if (msg.startsWith("购买田地")) {
+        if (msg.startsWith("购置田地")) {
             //查询个人背包
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
             //查询田地
@@ -446,7 +475,7 @@ public class GamePlugin extends BotPlugin {
                     farmUserInfoService.changeUserInfo(farmUserInfo);
                     cq.sendGroupMsg(groupId, "惜风已为您开辟一块新的田地，快去种点什么吧！", true);
                 } else {
-                    cq.sendGroupMsg(groupId, "您的星币不足购买新的田地了哦！攒" + farmUserInfo.getFieldCount() + "星币再来吧。", true);
+                    cq.sendGroupMsg(groupId, "您的星币不足购置新的田地了哦！攒" + farmUserInfo.getFieldCount() + "星币再来吧。", true);
                 }
             } else {
                 cq.sendGroupMsg(groupId, "您已经拥有了6块田地...不要贪心不足了~", true);
@@ -667,9 +696,7 @@ public class GamePlugin extends BotPlugin {
                             exchange.addAndGet(20);
                         }
                     } else {
-                        if (item < 20) {
-                            exchange.addAndGet(20);
-                        } else if (item < 30) {
+                        if (item < 25) {
                             exchange.addAndGet(20);
                         } else if (item < 40) {
                             exchange.addAndGet(15);
@@ -683,8 +710,8 @@ public class GamePlugin extends BotPlugin {
                 });
                 //判断抽奖结果
                 if (exchange.intValue() == 100) {
-                    explorePocket.setStars(explorePocket.getStars() + 10);
-                    builder.append("]\n首针落中！恭喜您获得10星币大奖！");
+                    explorePocket.setStars(explorePocket.getStars() + 5);
+                    builder.append("]\n首针落中！恭喜您获得5星币大奖！");
                 } else if (exchange.intValue() > 80) {
                     explorePocket.setStars(explorePocket.getStars() + 1);
                     builder.append("]\n总分80！恭喜获得1星币！");
