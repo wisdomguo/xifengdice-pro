@@ -51,12 +51,12 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      * @return boolean
      */
     @Override
-    public boolean changeField(PlantedField plantedField) {
+    public boolean changeField(PlantedField plantedField,Integer type) {
         PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
                 .eq(PlantedField::getQqId, plantedField.getQqId())
                 .eq(PlantedField::getType, plantedField.getType())
                 .eq(PlantedField::getSerial, plantedField.getSerial()));
-        if (oldField != null) {
+        if (oldField != null && type == 2) {
             oldField.setTimes(oldField.getTimes() + 1);
             oldField.setPlantingTime(new Date());
             this.baseMapper.updateById(oldField);
@@ -93,15 +93,7 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      */
     @Override
     public boolean deleteField(PlantedField plantedField) {
-        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
-                .eq(PlantedField::getQqId, plantedField.getQqId())
-                .eq(PlantedField::getType, plantedField.getType())
-                .eq(PlantedField::getSerial, plantedField.getSerial()));
-        if (oldField != null) {
-            this.baseMapper.deleteById(oldField.getId());
-        } else {
-            return false;
-        }
+        this.baseMapper.deleteById(plantedField.getId());
         List<PlantedField> plantedFields = this.baseMapper.selectList(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, plantedField.getQqId()));
         AssemblyCache.plantedFields.put(plantedField.getQqId(), plantedFields);
         return true;

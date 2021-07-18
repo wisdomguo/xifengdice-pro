@@ -134,6 +134,7 @@ public class OtherPlugin extends BotPlugin {
                 && !oldMsg.startsWith("作物仓库")
                 && !oldMsg.startsWith("我的田地")
                 && !oldMsg.startsWith("购买田地")
+                && !oldMsg.startsWith("我的农业")
                 && !oldMsg.startsWith("修复田地")
                 && !oldMsg.startsWith("随机偷菜")
                 && !oldMsg.startsWith("查看背包")){

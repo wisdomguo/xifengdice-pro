@@ -26,8 +26,13 @@ public interface PlantedFieldService extends IService<PlantedField>{
      * @param plantedField
      * @return boolean
      */
-    boolean changeField(PlantedField plantedField);
+    boolean changeField(PlantedField plantedField,Integer type);
 
+    /**
+     * 加速田地作物
+     * @param plantedField
+     * @return boolean
+     */
     boolean accelerate(PlantedField plantedField);
 
     /**

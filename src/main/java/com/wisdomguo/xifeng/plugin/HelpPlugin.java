@@ -131,7 +131,7 @@ public class HelpPlugin extends BotPlugin {
             }
         }
 
-        if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg)) {
+        if (BoolUtil.startByPoint(msg) || BoolUtil.startByFullStop(msg) || msg.equals("帮助") || msg.equals("#用户协议")) {
             QQGroup qqGroup = qqGroupSerivce.selectAllByID(String.valueOf(groupId));
             if (qqGroup.getXfOpen() == 1 && !atUserId.equals("1515044906")) {
                 return MESSAGE_IGNORE;
@@ -140,7 +140,7 @@ public class HelpPlugin extends BotPlugin {
             return MESSAGE_IGNORE;
         }
 
-         if (msg.startsWith(".help")) {
+         if (msg.startsWith(".help") || msg.equals("帮助")) {
             StringBuffer sb = new StringBuffer("以下是惜风的功能列表，有什么需要帮助的嘛？");
              sb.append("\n.file help 角色卡地址功能");
              sb.append("\n.xf help   惜风管理功能");
@@ -149,6 +149,7 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n.luck help  每日功能");
             sb.append("\n.card help  coc角色卡");
             sb.append("\n.game help  娱乐功能");
+            sb.append("\n#用户协议    阅读用户协议");
             sb.append("\n惜风设计编程:\n不知归（1969077760）");
             sb.append("\n惜风文案编辑:\n法露特（984641292）");
             sb.append("\n");
@@ -159,6 +160,8 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n下版本更新：星空农场正式版");
             sb.append("\n由于清空星空背包本次全员补偿:\n500星屑,3星碎,1星币,一张随机加速卡");
             sb.append("\n下版本开始将不会清除用户数据");
+            sb.append("\n");
+            sb.append("\n请注意！请用惜风前请先阅读《用户协议》");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -200,6 +203,24 @@ public class HelpPlugin extends BotPlugin {
 
         if (msg.startsWith(".game help")) {
             StringBuffer sb = getGameHelpList();
+            cq.sendGroupMsg(groupId, sb.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+
+        if (msg.startsWith("#用户协议")) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("0.惜风为群友自制骰娘，但同样使用OlivaDice(DIXE)默认服务协议。如果你看到了这句话，意味着Master应用默认协议，请注意。\n" +
+                    "1.邀请骰娘、使用掷骰服务和在群内阅读此协议视为同意并承诺遵守此协议，否则请使用.xf dismiss移出骰娘。\n" +
+                    "2.不允许禁言、移出骰娘或刷屏掷骰等对骰娘的不友善行为，这些行为将会提高骰娘被制裁的风险。开关骰娘响应请使用.xf on/off。\n" +
+                    "3.骰娘默认邀请行为已事先得到群内同意，因而会自动同意群邀请。因擅自邀请而使骰娘遭遇不友善行为时，邀请者因未履行预见义务而将承担连带责任。\n" +
+                    "4.禁止将骰娘用于赌博及其他违法犯罪行为。\n" +
+                    "5.对于设置敏感昵称等无法预见但有可能招致言论审查的行为，骰娘可能会出于自我保护而拒绝提供服务\n" +
+                    "6.由于技术以及资金原因，我们无法保证机器人100%的时间稳定运行，可能不定时停机维护或遭遇冻结，但是相应情况会及时通过各种渠道进行通知，敬请谅解。临时停机的骰娘不会有任何响应，故而不会影响群内活动，此状态下仍然禁止不友善行为。\n" +
+                    "7.对于违反协议的行为，骰娘将视情况终止对用户和所在群提供服务，并将不良记录共享给其他服务提供方。黑名单相关事宜可以与服务提供方协商，但最终裁定权在服务提供方。\n" +
+                    "8.本协议内容随时有可能改动。请注意帮助信息、签名、空间、官方群等处的骰娘动态。\n" +
+                    "9.骰娘提供掷骰服务是完全免费的，欢迎投食。\n" +
+                    "10.本服务最终解释权归服务提供方所有。\n" +
+                    "11.如有问题请加群583488577询问。");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -301,6 +322,7 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n星空转轮:   10星碎抽奖一次,可获得星币和种子奖励");
         sb.append("\n种子口袋:   查看自己种子口袋");
         sb.append("\n作物仓库:   查看自己已成熟的果实");
+        sb.append("\n我的农业:   查看自己目前的农业信息");
         sb.append("\n我的田地:   查看自己正在种植的作物");
         sb.append("\n农业商店:   查看可购买的作物列表");
         sb.append("\n购买[作物名]:   购买商店里的作物");
