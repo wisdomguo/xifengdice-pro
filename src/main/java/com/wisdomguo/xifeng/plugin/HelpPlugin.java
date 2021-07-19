@@ -152,16 +152,10 @@ public class HelpPlugin extends BotPlugin {
             sb.append("\n#用户协议    阅读用户协议");
             sb.append("\n惜风设计编程:\n不知归（1969077760）");
             sb.append("\n惜风文案编辑:\n法露特（984641292）");
+             sb.append("\n请注意！请用惜风前请先阅读《用户协议》");
             sb.append("\n");
-            sb.append("\n本次更新：星空探索及农场删档测试");
-            sb.append("\n1.开放了两块田地，田地可以购买了，最多6块");
-            sb.append("\n2.由于星空的侵蚀，田地也会随机被破坏，需要大家及时修补");
-            sb.append("\n3.转账功能开放了，可以进行转账了");
-            sb.append("\n下版本更新：星空农场正式版");
-            sb.append("\n由于清空星空背包本次全员补偿:\n500星屑,3星碎,1星币,一张随机加速卡");
-            sb.append("\n下版本开始将不会清除用户数据");
-            sb.append("\n");
-            sb.append("\n请注意！请用惜风前请先阅读《用户协议》");
+            sb.append("\n本次更新：星空·不删档测试版");
+            sb.append("\n下版本更新：骰娘正经功能");
             cq.sendGroupMsg(groupId, sb.toString(), false);
             return MESSAGE_IGNORE;
         }
@@ -334,6 +328,7 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n购置田地:      花费n-1星币购买第n块田地");
         sb.append("\n随机加速:      使用加速卡随机加速一块田地");
         sb.append("\n随机偷菜:      随机偷菜，一天3次机会");
+        sb.append("\n新手礼包:      获取新手礼包");
         sb.append("\n转账@用户，n:   给别人转账不超过500（n）的星屑");
         sb.append("\n备注1:星币和星碎作物有种植失败概率");
         sb.append("\n备注2:发送“星空系统详解”查看农场功能详细介绍");

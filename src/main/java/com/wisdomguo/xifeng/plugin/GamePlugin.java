@@ -187,6 +187,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的兑换格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
         }
 
@@ -202,6 +203,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的转轮格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
             AssemblyCache.seedBags.put(userId, seedBagService.list(Wrappers.<SeedBag>lambdaQuery().eq(SeedBag::getQqId, userId)));
         }
@@ -233,6 +235,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的购买格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
             AssemblyCache.seedBags.put(userId, seedBagService.list(Wrappers.<SeedBag>lambdaQuery().eq(SeedBag::getQqId, userId)));
         }
@@ -244,6 +247,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的种植格式！", false);
             AssemblyCache.plantedFields.put(userId, plantedFieldService.list(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, userId)));
             AssemblyCache.seedBags.put(userId, seedBagService.list(Wrappers.<SeedBag>lambdaQuery().eq(SeedBag::getQqId, userId)));
         }
@@ -255,6 +259,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的收获格式！", false);
             AssemblyCache.plantedFields.put(userId, plantedFieldService.list(Wrappers.<PlantedField>lambdaQuery().eq(PlantedField::getQqId, userId)));
             AssemblyCache.userInfos.put(userId, farmUserInfoService.getById(userId));
             AssemblyCache.fruits.put(userId, fruitService.list(Wrappers.<Fruit>lambdaQuery().eq(Fruit::getQqId, userId)));
@@ -267,6 +272,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的出售格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
             AssemblyCache.fruits.put(userId, fruitService.list(Wrappers.<Fruit>lambdaQuery().eq(Fruit::getQqId, userId)));
         }
@@ -278,6 +284,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的恢复田地格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
             AssemblyCache.userInfos.put(userId, farmUserInfoService.getById(userId));
         }
@@ -289,6 +296,7 @@ public class GamePlugin extends BotPlugin {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            cq.sendGroupMsg(groupId, "请输入正确的购置田地格式！", false);
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
             AssemblyCache.userInfos.put(userId, farmUserInfoService.getById(userId));
         }
@@ -327,6 +335,50 @@ public class GamePlugin extends BotPlugin {
             });
             cq.sendGroupMsg(groupId, "请输入正确的转账数量", false);
         }
+
+        try {
+            //新手礼包
+            if (noviceGift(cq, event, msg, groupId, userId)) {
+                return MESSAGE_IGNORE;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
+        }
+
+        if (help(cq, msg, groupId)) {
+            return MESSAGE_IGNORE;
+        }
+        // 继续执行下一个插件
+        return MESSAGE_IGNORE;
+    }
+
+    public boolean noviceGift(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
+        if (msg.equals("新手礼包")) {
+            ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
+            if(explorePocket.getNoviceGift()==0){
+                FarmUserInfo farmUserInfo=farmUserInfoService.findByQqId(userId);
+                List<SeedSpecies> seedSpeciesList=seedSpeciesService.list(Wrappers.<SeedSpecies>lambdaQuery().eq(SeedSpecies::getType,1));
+                Random random=new Random();
+                SeedSpecies seedSpecies=seedSpeciesList.get(random.nextInt(seedSpeciesList.size()));
+                SeedBag noviceBag=new SeedBag(userId,seedSpecies.getId(),1,1);
+                seedBagService.changeSeed(noviceBag);
+                farmUserInfo.setQuickenCount(2);
+                farmUserInfoService.changeUserInfo(farmUserInfo);
+                int stardustCount=random.nextInt(50)+100;
+                explorePocket.setStardust(explorePocket.getStardust()+stardustCount);
+                explorePocket.setNoviceGift(1);
+                explorePocketService.changeStars(explorePocket);
+                cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("您打开了新手礼包，您获得了：2张随机加速券，1颗随机种子，随机100~150点星屑。\n快去查看自己的背包和种子口袋吧！"),false);
+            }else{
+                cq.sendGroupMsg(groupId,Msg.builder().at(userId).text("您已领取过新手礼包了！"),false);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean help(@NotNull Bot cq, String msg, long groupId) {
         if (msg.equals("星空系统详解")) {
             StringBuilder builder = new StringBuilder("星空系统详解：");
             builder.append("\n1.星空探索：");
@@ -349,10 +401,9 @@ public class GamePlugin extends BotPlugin {
             builder.append("\n    我们也随机的发放一些加速卷来帮助玩家更快的收获作物，并且收获的作物也可以在“作物仓库”中进行查看。");
             builder.append("\n    当然我们的星空系统中还有一些其他的功能，只不过这些功能就需要大家自己的努力探索了，那么让我们开始自己的第一次探险吧！");
             cq.sendGroupMsg(groupId, builder.toString(), false);
-            return MESSAGE_IGNORE;
+            return true;
         }
-        // 继续执行下一个插件
-        return MESSAGE_IGNORE;
+        return false;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -457,8 +508,6 @@ public class GamePlugin extends BotPlugin {
             StringBuilder builder = new StringBuilder();
             if (farmUserInfo.getStealCount() > 0) {
                 if (steal.get(userId) == null || steal.get(userId).plusHours(6).isBefore(LocalDateTime.now())) {
-
-
                     boolean attempt = farmUserInfos.stream().anyMatch(item -> {
 //                    if (item.getProtectionTime().isBefore(LocalDateTime.now().minusHours(8)) && item.getQqId() != userId) {
                         List<PlantedField> fields = plantedFieldService.findByQqId(item.getQqId());
@@ -490,6 +539,7 @@ public class GamePlugin extends BotPlugin {
                                 explorePocket.setStardust(explorePocket.getStardust() - (result1));
                                 builder.append("您偷菜的时候被惜风的小艾露发现了~小艾露偷偷的从你的口袋里拿出了" + result1 + "星屑！");
                             }
+                            steal.put(userId, LocalDateTime.now());
                             return true;
                         }
 //                    }
@@ -553,6 +603,7 @@ public class GamePlugin extends BotPlugin {
             }
             if (count < 0) {
                 cq.sendGroupMsg(groupId, "请输入正确的修复数量！", false);
+                return true;
             }
             if (farmUserInfo.getDisasterCount() >= count) {
                 if (explorePocket.getStardust() >= (500 * count * (farmUserInfo.getFieldCount() - 1))) {
@@ -664,7 +715,6 @@ public class GamePlugin extends BotPlugin {
             String countString = msg.replaceAll("星碎兑换", "");
             if (countString.equals("")) {
                 countString = "1";
-                return true;
             }
             int count = Integer.valueOf(countString);
             //查看背包

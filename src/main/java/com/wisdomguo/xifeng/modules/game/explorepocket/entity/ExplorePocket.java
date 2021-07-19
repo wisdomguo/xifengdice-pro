@@ -42,4 +42,9 @@ public class ExplorePocket implements Serializable {
      * 用户名
      */
     private String nickName;
+
+    /**
+     * 星尘
+     */
+    private  Integer noviceGift;
 }

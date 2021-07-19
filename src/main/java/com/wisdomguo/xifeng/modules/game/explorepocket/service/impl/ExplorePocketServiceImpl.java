@@ -30,7 +30,7 @@ public class ExplorePocketServiceImpl extends ServiceImpl<ExplorePocketMapper,Ex
                 AssemblyCache.explorePockets.put(qqId,explorePocket);
                 return explorePocket;
             }else{
-                explorePocket=new ExplorePocket(qqId,0,0,0,nickName);
+                explorePocket=new ExplorePocket(qqId,0,0,0,nickName,0);
                 this.baseMapper.insert(explorePocket);
                 AssemblyCache.explorePockets.put(qqId,explorePocket);
                 return explorePocket;
@@ -46,6 +46,7 @@ public class ExplorePocketServiceImpl extends ServiceImpl<ExplorePocketMapper,Ex
                 .set(ExplorePocket::getNickName, explorePocket.getNickName())
                 .set(ExplorePocket::getStarFragment, explorePocket.getStarFragment())
                 .set(ExplorePocket::getStars, explorePocket.getStars())
+                .set(ExplorePocket::getNoviceGift, explorePocket.getNoviceGift())
                 .eq(ExplorePocket::getQqId, explorePocket.getQqId()));
         AssemblyCache.explorePockets.put(explorePocket.getQqId(),explorePocket);
         return result;

@@ -52,10 +52,15 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
      */
     @Override
     public boolean changeField(PlantedField plantedField,Integer type) {
-        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
-                .eq(PlantedField::getQqId, plantedField.getQqId())
-                .eq(PlantedField::getType, plantedField.getType())
-                .eq(PlantedField::getSerial, plantedField.getSerial()));
+        PlantedField oldField = new PlantedField();
+        if(plantedField.getId()==null){
+            this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
+                    .eq(PlantedField::getQqId, plantedField.getQqId())
+                    .eq(PlantedField::getType, plantedField.getType())
+                    .eq(PlantedField::getSerial, plantedField.getSerial()));
+        }else{
+            oldField=plantedField;
+        }
         if (oldField != null && type == 2) {
             oldField.setTimes(oldField.getTimes() + 1);
             oldField.setPlantingTime(new Date());

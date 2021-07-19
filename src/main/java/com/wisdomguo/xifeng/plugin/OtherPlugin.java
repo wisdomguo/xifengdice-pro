@@ -130,6 +130,7 @@ public class OtherPlugin extends BotPlugin {
                 && !oldMsg.startsWith("星币排行")
                 && !oldMsg.startsWith("星空探索")
                 && !oldMsg.startsWith("星空转轮")
+                && !oldMsg.startsWith("新手礼包")
                 && !oldMsg.startsWith("种子口袋")
                 && !oldMsg.startsWith("作物仓库")
                 && !oldMsg.startsWith("我的田地")
