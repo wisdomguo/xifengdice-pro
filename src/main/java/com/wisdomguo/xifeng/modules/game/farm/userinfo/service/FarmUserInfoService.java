@@ -27,4 +27,8 @@ public interface FarmUserInfoService extends IService<FarmUserInfo> {
     boolean changeUserInfo(FarmUserInfo userInfo);
 
 
+    int updateUserDisasterCountWhereCountGtOne();
+
+
+    int updateUserQuickenCount();
 }

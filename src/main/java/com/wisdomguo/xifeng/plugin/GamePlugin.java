@@ -96,15 +96,34 @@ public class GamePlugin extends BotPlugin {
     SimpleDateFormat simpleFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Shanghai")
-    public void jrrpClear() {
+    public void clear() {
         farmUserInfoService.update(Wrappers.<FarmUserInfo>lambdaUpdate().set(FarmUserInfo::getStealCount, 3));
-        explorePocketService.update(Wrappers.<ExplorePocket>lambdaUpdate().set(ExplorePocket::getStardust, 100).lt(ExplorePocket::getStardust, 500));
+        explorePocketService.update(Wrappers.<ExplorePocket>lambdaUpdate().set(ExplorePocket::getStardust, 200).lt(ExplorePocket::getStardust, 200));
 
         //加载星空寻宝背包
         explorePocketService.list().stream().forEach(item -> {
             AssemblyCache.explorePockets.put(item.getQqId(), item);
         });
 
+        //加载星农田
+        farmUserInfoService.list().stream().forEach(item -> {
+            AssemblyCache.userInfos.put(item.getQqId(), item);
+        });
+    }
+
+    @Scheduled(cron = "0 0 0 1/2 * ?", zone = "Asia/Shanghai")
+    public void filedClear() {
+        farmUserInfoService.updateUserDisasterCountWhereCountGtOne();
+        //加载星农田
+        farmUserInfoService.list().stream().forEach(item -> {
+            AssemblyCache.userInfos.put(item.getQqId(), item);
+        });
+    }
+
+
+    @Scheduled(cron = "0 0 0 ? * 2 ", zone = "Asia/Shanghai")
+    public void quickUp() {
+        farmUserInfoService.updateUserQuickenCount();
         //加载星农田
         farmUserInfoService.list().stream().forEach(item -> {
             AssemblyCache.userInfos.put(item.getQqId(), item);
@@ -324,7 +343,7 @@ public class GamePlugin extends BotPlugin {
 
         try {
             //转账
-            if (transfer(cq, event, msg, groupId, userId)) {
+            if (thisGame.transfer(cq, event, msg, groupId, userId)) {
                 return MESSAGE_IGNORE;
             }
         } catch (Exception e) {
@@ -338,7 +357,7 @@ public class GamePlugin extends BotPlugin {
 
         try {
             //新手礼包
-            if (noviceGift(cq, event, msg, groupId, userId)) {
+            if (thisGame.noviceGift(cq, event, msg, groupId, userId)) {
                 return MESSAGE_IGNORE;
             }
         } catch (Exception e) {
@@ -484,14 +503,18 @@ public class GamePlugin extends BotPlugin {
                         newPlante.add(item);
                     }
                 });
-                Random r = new Random();
-                int result = r.nextInt(newPlante.size());
-                PlantedField field = newPlante.get(result);
-                field.setPlantingTime(Date.from(LocalDateTime.now().minusHours(AssemblyCache.seedSpeciesMap.get(field.getSerial()).getDuration()).atZone(ZoneId.systemDefault()).toInstant()));
-                plantedFieldService.accelerate(field);
-                farmUserInfo.setQuickenCount(farmUserInfo.getQuickenCount() - 1);
-                farmUserInfoService.changeUserInfo(farmUserInfo);
-                cq.sendGroupMsg(groupId, "您的" + AssemblyCache.seedSpeciesMap.get(field.getSerial()).getName() + "已经可以收获了，快去看看吧！", false);
+                if(newPlante.size()>0){
+                    Random r = new Random();
+                    int result = r.nextInt(newPlante.size());
+                    PlantedField field = newPlante.get(result);
+                    field.setPlantingTime(Date.from(LocalDateTime.now().minusHours(AssemblyCache.seedSpeciesMap.get(field.getSerial()).getDuration()).atZone(ZoneId.systemDefault()).toInstant()));
+                    plantedFieldService.accelerate(field);
+                    farmUserInfo.setQuickenCount(farmUserInfo.getQuickenCount() - 1);
+                    farmUserInfoService.changeUserInfo(farmUserInfo);
+                    cq.sendGroupMsg(groupId, "您的" + AssemblyCache.seedSpeciesMap.get(field.getSerial()).getName() + "已经可以收获了，快去看看吧！", false);
+                }else{
+                    cq.sendGroupMsg(groupId, "您的田里没有可加速作物哦！", false);
+                }
             } else {
                 cq.sendGroupMsg(groupId, "您的加速卡不足，请等待管理员发放吧！", false);
             }
@@ -1163,7 +1186,7 @@ public class GamePlugin extends BotPlugin {
                             FarmUserInfo userInfo = farmUserInfoService.findByQqId(userId);
                             userInfo.setDisasterCount(userInfo.getDisasterCount() + 1);
                             farmUserInfoService.changeUserInfo(userInfo);
-                            builder2.append("警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
+                            builder2.append("\n警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
                         }
                         plantedFieldService.deleteField(item);
                     }

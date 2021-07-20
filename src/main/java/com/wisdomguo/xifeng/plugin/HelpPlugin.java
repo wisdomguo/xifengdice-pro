@@ -332,6 +332,7 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n转账@用户，n:   给别人转账不超过500（n）的星屑");
         sb.append("\n备注1:星币和星碎作物有种植失败概率");
         sb.append("\n备注2:发送“星空系统详解”查看农场功能详细介绍");
+        sb.append("\n备注3:每日会对星屑不足200玩家补足200星屑\n每两天会自动修复一块被侵蚀的田地\n每周会赠送一张加速卡");
         return sb;
     }
 

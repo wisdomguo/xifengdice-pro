@@ -63,4 +63,14 @@ public class FarmUserInfoServiceImpl extends ServiceImpl<FarmUserInfoMapper, Far
         AssemblyCache.userInfos.put(userInfo.getQqId(),userInfo);
         return result;
     }
+
+    @Override
+    public int updateUserDisasterCountWhereCountGtOne() {
+        return this.baseMapper.updateUserDisasterCountWhereCountGtOne();
+    }
+
+    @Override
+    public int updateUserQuickenCount() {
+        return this.baseMapper.updateUserQuickenCount();
+    }
 }
