@@ -36,7 +36,7 @@ public class XFPlugin extends BotPlugin {
     @Override
     public int onFriendRequest(@NotNull Bot bot, @NotNull OnebotEvent.FriendRequestEvent event) {
         String com=event.getComment();
-        if(com.indexOf("1d20")!=-1){
+        if(com.indexOf("1d100")!=-1){
             bot.setFriendAddRequest(event.getFlag(),true,"");
         }else{
             bot.setFriendAddRequest(event.getFlag(),false,"您的答案有误，请重新回答哦！");
@@ -44,11 +44,13 @@ public class XFPlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-//    @Override
-//    public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
-//        bot.setGroupAddRequest(event.getFlag(),"",true,"");
-//        return MESSAGE_IGNORE;
-//    }
+    @Override
+    public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
+        if(event.getSubType().indexOf("invite")!=-1) {
+            bot.setGroupAddRequest(event.getFlag(), "", true, "");
+        }
+        return MESSAGE_IGNORE;
+    }
 
 
     /**

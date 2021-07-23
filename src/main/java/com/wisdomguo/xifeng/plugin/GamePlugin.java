@@ -111,14 +111,14 @@ public class GamePlugin extends BotPlugin {
         });
     }
 
-    @Scheduled(cron = "0 0 0 1/2 * ?", zone = "Asia/Shanghai")
-    public void filedClear() {
-        farmUserInfoService.updateUserDisasterCountWhereCountGtOne();
-        //加载星农田
-        farmUserInfoService.list().stream().forEach(item -> {
-            AssemblyCache.userInfos.put(item.getQqId(), item);
-        });
-    }
+//    @Scheduled(cron = "0 0 0 1/2 * ?", zone = "Asia/Shanghai")
+//    public void filedClear() {
+//        farmUserInfoService.updateUserDisasterCountWhereCountGtOne();
+//        //加载星农田
+//        farmUserInfoService.list().stream().forEach(item -> {
+//            AssemblyCache.userInfos.put(item.getQqId(), item);
+//        });
+//    }
 
 
     @Scheduled(cron = "0 0 0 ? * 2 ", zone = "Asia/Shanghai")
@@ -174,10 +174,10 @@ public class GamePlugin extends BotPlugin {
             }
         }
 
-        String nickname = cq.getGroupMemberInfo(groupId, userId, false).getCard();
-        if (nickname.equals("")) {
-            nickname = cq.getGroupMemberInfo(groupId, userId, false).getNickname();
-        }
+//        String nickname = cq.getGroupMemberInfo(groupId, userId, false).getCard();
+//        if (nickname.equals("")) {
+        String  nickname = cq.getGroupMemberInfo(groupId, userId, false).getNickname();
+//        }
 
         try {
             //星空探索
@@ -365,6 +365,16 @@ public class GamePlugin extends BotPlugin {
             AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
         }
 
+      try {
+            //新手礼包
+            if (msg.equals("#重新来过")) {
+                return MESSAGE_IGNORE;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            AssemblyCache.explorePockets.put(userId, explorePocketService.getById(userId));
+        }
+
         if (help(cq, msg, groupId)) {
             return MESSAGE_IGNORE;
         }
@@ -372,6 +382,7 @@ public class GamePlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
+    @Transactional
     public boolean noviceGift(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.equals("新手礼包")) {
             ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
@@ -1156,7 +1167,7 @@ public class GamePlugin extends BotPlugin {
                         Random random = new Random();
                         int success = random.nextInt(100) + 1;
                         //判断是否受灾,是否大成功
-                        if (success > 85) {
+                        if (success > 90) {
                             failCount.append(" " + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getName());
                         } else if (success <= 5) {
                             successCount.append(" " + AssemblyCache.seedSpeciesMap.get(item.getSerial()).getName());
@@ -1181,13 +1192,13 @@ public class GamePlugin extends BotPlugin {
                     if (AssemblyCache.seedSpeciesMap.get(item.getSerial()).getTimes() > (item.getTimes() + 1)) {
                         plantedFieldService.changeField(item, 2);
                     } else {
-                        Random random = new Random();
-                        if (random.nextInt(100) + 1 > 95) {
-                            FarmUserInfo userInfo = farmUserInfoService.findByQqId(userId);
-                            userInfo.setDisasterCount(userInfo.getDisasterCount() + 1);
-                            farmUserInfoService.changeUserInfo(userInfo);
-                            builder2.append("\n警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
-                        }
+//                        Random random = new Random();
+//                        if (random.nextInt(100) + 1 > 95) {
+//                            FarmUserInfo userInfo = farmUserInfoService.findByQqId(userId);
+//                            userInfo.setDisasterCount(userInfo.getDisasterCount() + 1);
+//                            farmUserInfoService.changeUserInfo(userInfo);
+//                            builder2.append("\n警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
+//                        }
                         plantedFieldService.deleteField(item);
                     }
                 }

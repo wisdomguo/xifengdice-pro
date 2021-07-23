@@ -75,10 +75,15 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
 
     @Override
     public boolean accelerate(PlantedField plantedField) {
-        PlantedField oldField = this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
-                .eq(PlantedField::getQqId, plantedField.getQqId())
-                .eq(PlantedField::getType, plantedField.getType())
-                .eq(PlantedField::getSerial, plantedField.getSerial()));
+        PlantedField oldField = new PlantedField();
+        if(plantedField.getId()==null){
+            this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
+                    .eq(PlantedField::getQqId, plantedField.getQqId())
+                    .eq(PlantedField::getType, plantedField.getType())
+                    .eq(PlantedField::getSerial, plantedField.getSerial()));
+        }else{
+            oldField=plantedField;
+        }
         if (oldField != null) {
             oldField.setPlantingTime(plantedField.getPlantingTime());
             this.baseMapper.updateById(oldField);
