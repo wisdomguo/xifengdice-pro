@@ -46,6 +46,7 @@ public class XFPlugin extends BotPlugin {
 
     @Override
     public int onGroupRequest(@NotNull Bot bot, @NotNull OnebotEvent.GroupRequestEvent event) {
+        //判断是不是加群邀请
         if(event.getSubType().indexOf("invite")!=-1) {
             bot.setGroupAddRequest(event.getFlag(), "", true, "");
         }

@@ -53,7 +53,7 @@ public class PlantedFieldServiceImpl extends ServiceImpl<PlantedFieldMapper, Pla
     @Override
     public boolean changeField(PlantedField plantedField,Integer type) {
         PlantedField oldField = new PlantedField();
-        if(plantedField.getId()==null){
+        if(plantedField.getId()==null && type == 2){
             this.baseMapper.selectOne(Wrappers.<PlantedField>lambdaQuery()
                     .eq(PlantedField::getQqId, plantedField.getQqId())
                     .eq(PlantedField::getType, plantedField.getType())

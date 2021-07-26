@@ -1024,45 +1024,50 @@ public class GamePlugin extends BotPlugin {
             String finalMsg = msg.replaceAll("购买", "");
             //设置种子实体
             SeedBag seedBag = new SeedBag();
-            seedBag.setCount(1);
             seedBag.setQqId(userId);
             AtomicInteger count = new AtomicInteger();
             list.stream().forEach(item -> {
-                if (item.getName().equals(finalMsg)) {
+                if (finalMsg.startsWith(item.getName())) {
                     explorePocket.setNickName(event.getSender().getNickname());
+
+                    int seedCount=Integer.valueOf(finalMsg.replaceAll(item.getName(),"0"));
+                    if (seedCount==0){
+                        seedCount=1;
+                    }
+                    seedBag.setCount(seedCount);
                     if (item.getType() == 1) {
                         //判断星屑是否够用
-                        if (explorePocket.getStardust() >= item.getPrice()) {
-                            explorePocket.setStardust(explorePocket.getStardust() - item.getPrice());
+                        if (explorePocket.getStardust() >= item.getPrice()*seedCount) {
+                            explorePocket.setStardust(explorePocket.getStardust() - item.getPrice()*seedCount);
                             seedBag.setSpeciesId(item.getId());
                             seedBag.setType(1);
                             seedBagService.changeSeed(seedBag);
                             explorePocketService.changeStars(explorePocket);
-                            builder.append("您已购买" + "1颗" + item.getName() + "种子");
+                            builder.append("您已购买" + seedCount + "颗" + item.getName() + "种子");
                         } else {
                             builder.append("星屑不够，请下次再来吧！");
                         }
                     } else if (item.getType() == 2) {
                         //判断星碎是否够用
-                        if (explorePocket.getStarFragment() >= item.getPrice()) {
-                            explorePocket.setStarFragment(explorePocket.getStarFragment() - item.getPrice());
+                        if (explorePocket.getStarFragment() >= item.getPrice()*seedCount) {
+                            explorePocket.setStarFragment(explorePocket.getStarFragment() - item.getPrice()*seedCount);
                             seedBag.setSpeciesId(item.getId());
                             seedBag.setType(2);
                             seedBagService.changeSeed(seedBag);
                             explorePocketService.changeStars(explorePocket);
-                            builder.append("您已购买" + "1颗" + item.getName() + "种子");
+                            builder.append("您已购买" + seedCount + "颗" + item.getName() + "种子");
                         } else {
                             builder.append("星碎不够，请下次再来吧！");
                         }
                     } else {
                         //判断星币是否够用
-                        if (explorePocket.getStars() >= item.getPrice()) {
-                            explorePocket.setStars(explorePocket.getStars() - item.getPrice());
+                        if (explorePocket.getStars() >= item.getPrice()*seedCount) {
+                            explorePocket.setStars(explorePocket.getStars() - item.getPrice()*seedCount);
                             seedBag.setSpeciesId(item.getId());
                             seedBag.setType(3);
                             seedBagService.changeSeed(seedBag);
                             explorePocketService.changeStars(explorePocket);
-                            builder.append("您已购买" + "1颗" + item.getName() + "种子");
+                            builder.append("您已购买" + seedCount + "颗" + item.getName() + "种子");
                         } else {
                             builder.append("星币不够，请下次再来吧！");
                         }
@@ -1093,19 +1098,25 @@ public class GamePlugin extends BotPlugin {
             AtomicInteger correct = new AtomicInteger();
             seedSpecies.stream().forEach(item -> {
                 //寻找种植类型
-                if (item.getName().equals(finalMsg)) {
+                if (finalMsg.startsWith(item.getName())) {
                     AtomicInteger count = new AtomicInteger();
                     AtomicBoolean fieldBool = new AtomicBoolean(true);
                     seedBags.stream().forEach(seedBag -> {
                         //判断是否有该类型种子,或者数量足够
-                        if (seedBag.getSpeciesId().equals(item.getId()) && seedBag.getCount() > 0) {
+                        int seedCount=Integer.valueOf(finalMsg.replaceAll(item.getName(),"0"));
+                        if (seedCount==0){
+                            seedCount=1;
+                        }
+                        if (seedBag.getSpeciesId().equals(item.getId()) && seedBag.getCount() >= seedCount) {
                             //判断是否有空闲田地
-                            if (plantedFieldService.findByQqId(userId).size() < (farmUserInfoService.findByQqId(userId).getFieldCount() - farmUserInfoService.findByQqId(userId).getDisasterCount())) {
-                                seedBag.setCount(-1);
-                                seedBagService.changeSeed(seedBag);
-                                PlantedField field = new PlantedField(userId, item.getId(), item.getType(), 0, new Date(), 0, 0);
-                                plantedFieldService.changeField(field, 1);
-                                count.getAndIncrement();
+                            if (plantedFieldService.findByQqId(userId).size() + seedCount <= farmUserInfoService.findByQqId(userId).getFieldCount() ) {
+                                for(int i=0;i<seedCount;i++){
+                                    seedBag.setCount(-1);
+                                    seedBagService.changeSeed(seedBag);
+                                    PlantedField field = new PlantedField(userId, item.getId(), item.getType(), 0, new Date(), 0, 0);
+                                    plantedFieldService.changeField(field, 1);
+                                    count.getAndIncrement();
+                                }
                                 fieldBool.set(true);
                             } else {
                                 fieldBool.set(false);
@@ -1192,13 +1203,6 @@ public class GamePlugin extends BotPlugin {
                     if (AssemblyCache.seedSpeciesMap.get(item.getSerial()).getTimes() > (item.getTimes() + 1)) {
                         plantedFieldService.changeField(item, 2);
                     } else {
-//                        Random random = new Random();
-//                        if (random.nextInt(100) + 1 > 95) {
-//                            FarmUserInfo userInfo = farmUserInfoService.findByQqId(userId);
-//                            userInfo.setDisasterCount(userInfo.getDisasterCount() + 1);
-//                            farmUserInfoService.changeUserInfo(userInfo);
-//                            builder2.append("\n警告：此田地因为遭受灾害受到了损毁，请您及时修复！");
-//                        }
                         plantedFieldService.deleteField(item);
                     }
                 }
