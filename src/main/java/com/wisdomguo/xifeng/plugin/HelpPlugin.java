@@ -319,9 +319,9 @@ public class HelpPlugin extends BotPlugin {
         sb.append("\n我的农业:   查看自己目前的农业信息");
         sb.append("\n我的田地:   查看自己正在种植的作物");
         sb.append("\n农业商店:   查看可购买的作物列表");
-        sb.append("\n购买[作物名]:   购买商店里的作物");
-        sb.append("\n种植[作物名]:   在田地里种植该作物");
-        sb.append("\n收获[作物名]:   收获所有该种作物");
+        sb.append("\n购买[作物名][n]:   购买商店里的作物");
+        sb.append("\n种植[作物名][n]:   在田地里种植该作物");
+        sb.append("\n收获[作物名]:      收获所有该种作物");
         sb.append("\n出售[作物名][n]:   出售n个作物");
         sb.append("\n星碎兑换[n]:   n*100星屑兑换成n星碎");
         sb.append("\n修复田地[n]:   n*1000星屑修复n块损坏的田地");

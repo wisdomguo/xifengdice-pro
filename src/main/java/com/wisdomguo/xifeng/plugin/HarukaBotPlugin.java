@@ -40,6 +40,7 @@ public class HarukaBotPlugin extends BotPlugin {
     @Autowired
     BotContainer botInf;
 
+
     @Scheduled(cron = "0 0 8 ? * SUN", zone = "Asia/Shanghai")
     public void changHarukaScheduling() {
         HarukaScheduling scheduling=new HarukaScheduling();

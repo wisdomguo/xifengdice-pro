@@ -111,17 +111,7 @@ public class GamePlugin extends BotPlugin {
         });
     }
 
-//    @Scheduled(cron = "0 0 0 1/2 * ?", zone = "Asia/Shanghai")
-//    public void filedClear() {
-//        farmUserInfoService.updateUserDisasterCountWhereCountGtOne();
-//        //加载星农田
-//        farmUserInfoService.list().stream().forEach(item -> {
-//            AssemblyCache.userInfos.put(item.getQqId(), item);
-//        });
-//    }
-
-
-    @Scheduled(cron = "0 0 0 ? * 2 ", zone = "Asia/Shanghai")
+    @Scheduled(cron = "0 0 0 ? * MON", zone = "Asia/Shanghai")
     public void quickUp() {
         farmUserInfoService.updateUserQuickenCount();
         //加载星农田
@@ -174,10 +164,15 @@ public class GamePlugin extends BotPlugin {
             }
         }
 
-//        String nickname = cq.getGroupMemberInfo(groupId, userId, false).getCard();
-//        if (nickname.equals("")) {
-        String  nickname = cq.getGroupMemberInfo(groupId, userId, false).getNickname();
-//        }
+        String nickname = "";
+        try {
+            nickname=cq.getGroupMemberInfo(groupId, userId, false).getCard();
+            if ("".equals(nickname)) {
+                nickname = event.getSender().getNickname();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         try {
             //星空探索
@@ -366,8 +361,8 @@ public class GamePlugin extends BotPlugin {
         }
 
       try {
-            //新手礼包
-            if (msg.equals("#重新来过")) {
+            //重开新档
+            if ("#重新来过".equals(msg)) {
                 return MESSAGE_IGNORE;
             }
         } catch (Exception e) {
@@ -382,9 +377,9 @@ public class GamePlugin extends BotPlugin {
         return MESSAGE_IGNORE;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public boolean noviceGift(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
-        if (msg.equals("新手礼包")) {
+        if ("新手礼包".equals(msg)) {
             ExplorePocket explorePocket=explorePocketService.findByQqId(userId,event.getSender().getNickname());
             if(explorePocket.getNoviceGift()==0){
                 FarmUserInfo farmUserInfo=farmUserInfoService.findByQqId(userId);
@@ -409,7 +404,7 @@ public class GamePlugin extends BotPlugin {
     }
 
     private boolean help(@NotNull Bot cq, String msg, long groupId) {
-        if (msg.equals("星空系统详解")) {
+        if ("星空系统详解".equals(msg)) {
             StringBuilder builder = new StringBuilder("星空系统详解：");
             builder.append("\n1.星空探索：");
             builder.append("\n    作为一个调查员，我的的征途当然是星辰大海（不是），星空探索是我们前期获取货币星屑以及星碎的主要手段之一，每30分钟可以进行一次，投出成功\\困难成功\\极难成功\\大成功时分别获得5\\10\\20\\50点星屑；大失败时扣除50点星屑，若身上不够50点星屑则不扣除，如果当投出点数为1点时则获得1点星碎，点数100时则扣除身上全部星屑。");
@@ -438,7 +433,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean agriculture(@NotNull Bot cq, String msg, long groupId, long userId) {
-        if (msg.equals("我的农业")) {
+        if ("我的农业".equals(msg)) {
             //查看背包
             FarmUserInfo farmUserInfo = farmUserInfoService.findByQqId(userId);
             StringBuilder builder = new StringBuilder();
@@ -453,13 +448,13 @@ public class GamePlugin extends BotPlugin {
     public boolean transfer(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.startsWith("转账") || msg.startsWith("转账@")) {
             ExplorePocket from = explorePocketService.findByQqId(userId, event.getSender().getNickname());
-            String atQQID = "";
+            String atQqId = "";
             String count = "0";
             for (OnebotBase.Message message : event.getMessageList()) {
                 if ("at".equals(message.getType())) {
-                    atQQID = message.getDataMap().get("qq");
+                    atQqId = message.getDataMap().get("qq");
                 }
-                if (!"at".equals(message.getType()) && !message.getDataMap().get("text").equals("转账")) {
+                if (!"at".equals(message.getType()) && !"转账".equals(message.getDataMap().get("text"))) {
                     count = message.getDataMap().get("text").split("，")[1].replaceAll(" ", "");
                 }
             }
@@ -469,7 +464,7 @@ public class GamePlugin extends BotPlugin {
             }
             if (from.getStardust() >= Integer.valueOf(count)) {
                 //判断是否有转账账号
-                if (atQQID.equals("")) {
+                if ("".equals(atQqId)) {
                     from.setStardust(from.getStardust() - Integer.valueOf(count));
                     explorePocketService.changeStars(from);
                     cq.sendGroupMsg(groupId, "格式错误，那这些星屑惜风就用来给艾露买好吃的了~", false);
@@ -481,7 +476,7 @@ public class GamePlugin extends BotPlugin {
                             cq.sendGroupMsg(groupId, "单次转账不能超过500哦，记得多余的星屑用来送给有需要的人吧！", false);
                         } else {
                             from.setStardust(from.getStardust() - Integer.valueOf(count));
-                            ExplorePocket to = explorePocketService.findByQqId(Long.valueOf(atQQID), "");
+                            ExplorePocket to = explorePocketService.findByQqId(Long.valueOf(atQqId), "");
                             to.setStardust(to.getStardust() + Integer.valueOf(count));
                             explorePocketService.changeStars(from);
                             explorePocketService.changeStars(to);
@@ -502,7 +497,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean accelerate(@NotNull Bot cq, String msg, long groupId, long userId) {
-        if (msg.equals("随机加速")) {
+        if ("随机加速".equals(msg)) {
             FarmUserInfo farmUserInfo = farmUserInfoService.findByQqId(userId);
             if (farmUserInfo.getQuickenCount() > 0) {
                 //寻找所有该编号下程序
@@ -659,7 +654,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean starrySkyExploration(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) {
-        if (msg.equals("星空探索")) {
+        if ("星空探索".equals(msg)) {
             //探索结果
             int skillResult = 0;
             StringBuilder builder = new StringBuilder();
@@ -673,7 +668,7 @@ public class GamePlugin extends BotPlugin {
             } else if ((explorePocket.getStarFragment() * 100 + explorePocket.getStardust()) < 1000) {
                 determination = 70;
             }
-            builder.append(nickname + "穿过时空门来到了无尽星空开始探索...\n—————————\n" + nickname + "进行探索检定：1D100=" + skillResult + "/" + determination);
+            builder.append("穿过时空门来到了无尽星空开始探索...\n—————————\n" +  "您进行探索检定：1D100=" + skillResult + "/" + determination);
             if (expMap.get(userId) != null) {
                 long time = DateTimeUtil.getTimeMinDifference(expMap.get(userId));
                 if (time < 30) {
@@ -715,8 +710,10 @@ public class GamePlugin extends BotPlugin {
                     }
                 }
             }
-            cq.sendGroupMsg(groupId, builder.toString(), false);
-            explorePocket.setNickName(event.getSender().getNickname());
+            cq.sendGroupMsg(groupId, Msg.builder().at(userId).text(builder.toString()), false);
+            if(!"".equals(nickname)){
+                explorePocket.setNickName(event.getSender().getNickname());
+            }
             explorePocketService.changeStars(explorePocket);
         }
         return false;
@@ -724,7 +721,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean selectBackpack(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
-        if (msg.equals("查看背包")) {
+        if ("查看背包".equals(msg)) {
             //查看背包
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
             StringBuilder builder = new StringBuilder();
@@ -747,22 +744,24 @@ public class GamePlugin extends BotPlugin {
     public boolean exchangeStarFragment(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId, String nickname) {
         if (msg.startsWith("星碎兑换")) {
             String countString = msg.replaceAll("星碎兑换", "");
-            if (countString.equals("")) {
+            if ("".equals(countString)) {
                 countString = "1";
             }
             int count = Integer.valueOf(countString);
             //查看背包
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
             if (count < 0) {
-                cq.sendGroupMsg(groupId, nickname + "星碎兑换不能输入负数！", false);
+                cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("星碎兑换不能输入负数！"), false);
                 return true;
             }
             if (explorePocket.getStardust() < count * 100) {
-                cq.sendGroupMsg(groupId, nickname + "您的星屑不够哦！", false);
+                cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("您的星屑不够哦！"), false);
             } else {
                 explorePocket.setStardust(explorePocket.getStardust() - (count * 100));
                 explorePocket.setStarFragment(explorePocket.getStarFragment() + count);
-                explorePocket.setNickName(event.getSender().getNickname());
+                if(!"".equals(nickname)){
+                    explorePocket.setNickName(event.getSender().getNickname());
+                }
                 explorePocketService.changeStars(explorePocket);
                 cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("已为您兑换" + count + "枚星碎"), false);
             }
@@ -774,7 +773,7 @@ public class GamePlugin extends BotPlugin {
     @Transactional(rollbackFor = Exception.class)
     public boolean selectRanking(@NotNull Bot cq, String msg, long groupId) {
         if (msg.indexOf("排行") != -1) {
-            if (msg.equals("星空排行")) {
+            if ("星空排行".equals(msg)) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("无尽星空排行榜：");
                 AtomicInteger rankList = new AtomicInteger(1);
@@ -784,7 +783,7 @@ public class GamePlugin extends BotPlugin {
                 cq.sendGroupMsg(groupId, builder.toString(), false);
             }
 
-            if (msg.equals("星屑排行")) {
+            if ("星屑排行".equals(msg)) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("星屑排行榜：");
                 AtomicInteger rankList = new AtomicInteger(1);
@@ -794,7 +793,7 @@ public class GamePlugin extends BotPlugin {
                 cq.sendGroupMsg(groupId, builder.toString(), false);
             }
 
-            if (msg.equals("星币排行")) {
+            if ("星币排行".equals(msg)) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("星币排行榜：");
                 AtomicInteger rankList = new AtomicInteger(1);
@@ -811,7 +810,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean luckLottery(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
-        if (msg.equals("星空转轮")) {
+        if ("星空转轮".equals(msg)) {
             ExplorePocket explorePocket = explorePocketService.findByQqId(userId, event.getSender().getNickname());
             if (explorePocket.getStarFragment() >= 10) {
                 StringBuilder builder = new StringBuilder();
@@ -891,7 +890,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean selectSeedBag(@NotNull Bot cq, String msg, long groupId, long userId) {
-        if (msg.equals("种子口袋")) {
+        if ("种子口袋".equals(msg)) {
             List<SeedBag> list = seedBagService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
             if (list != null) {
@@ -922,7 +921,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean selectWarehouse(@NotNull Bot cq, String msg, long groupId, long userId) {
-        if (msg.equals("作物仓库")) {
+        if ("作物仓库".equals(msg)) {
             List<Fruit> list = fruitService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
             if (list != null) {
@@ -953,7 +952,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean selectField(@NotNull Bot cq, String msg, long groupId, long userId) {
-        if (msg.equals("我的田地")) {
+        if ("我的田地".equals(msg)) {
             List<PlantedField> list = plantedFieldService.findByQqId(userId);
             StringBuilder builder = new StringBuilder("");
             if (list != null) {
@@ -981,7 +980,7 @@ public class GamePlugin extends BotPlugin {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean agricultureStore(@NotNull Bot cq, String msg, long groupId) {
-        if (msg.equals("农业商店")) {
+        if ("农业商店".equals(msg)) {
             List<SeedSpecies> list = seedSpeciesService.list();
             StringBuilder builder = new StringBuilder("");
             if (list != null) {
@@ -1216,8 +1215,8 @@ public class GamePlugin extends BotPlugin {
                 if (successCount.length() > 0) {
                     builder.append("\n您的[" + successCount.toString() + " ]成长的非常优秀！获得了额外的作物！");
                 }
-                fruits.stream().forEach(ItemEvent -> {
-                    builder.append("\n" + AssemblyCache.seedSpeciesMap.get(ItemEvent.getSpeciesId()).getName() + "：" + ItemEvent.getCount() + AssemblyCache.seedSpeciesMap.get(ItemEvent.getSpeciesId()).getUnit());
+                fruits.stream().forEach(itemEvent -> {
+                    builder.append("\n" + AssemblyCache.seedSpeciesMap.get(itemEvent.getSpeciesId()).getName() + "：" + itemEvent.getCount() + AssemblyCache.seedSpeciesMap.get(itemEvent.getSpeciesId()).getUnit());
                 });
                 //修改果实仓库
                 fruitService.changeFruitList(fruits);
@@ -1234,7 +1233,7 @@ public class GamePlugin extends BotPlugin {
         return false;
     }
 
-    //出售种子
+
     @Transactional(rollbackFor = Exception.class)
     public boolean sellSeeds(@NotNull Bot cq, @NotNull OnebotEvent.GroupMessageEvent event, String msg, long groupId, long userId) {
         if (msg.startsWith("出售")) {
@@ -1276,7 +1275,7 @@ public class GamePlugin extends BotPlugin {
                                 explorePocket.setStardust(explorePocket.getStardust() + priceCount);
                                 //修改过货币数
                                 explorePocketService.changeStars(explorePocket);
-                                builder.append("您成功出售了：\n" + sellCount + AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getUnit() + "\n收益：" + priceCount + "星屑");
+                                builder.append("您成功出售了：\n" +AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getName()+ sellCount + AssemblyCache.seedSpeciesMap.get(item.getSpeciesId()).getUnit() + "\n收益：" + priceCount + "星屑");
                             }
                             count.getAndIncrement();
                         }
