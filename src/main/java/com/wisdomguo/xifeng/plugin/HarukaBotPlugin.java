@@ -1,6 +1,8 @@
 package com.wisdomguo.xifeng.plugin;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wisdomguo.xifeng.modules.other.harukaauthorize.entity.HarukaAuthorize;
+import com.wisdomguo.xifeng.modules.other.harukaauthorize.service.HarukaAuthorizeService;
 import com.wisdomguo.xifeng.modules.other.harukascheduling.entity.HarukaScheduling;
 import com.wisdomguo.xifeng.modules.other.harukascheduling.service.HarukaSchedulingService;
 import lombok.SneakyThrows;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -36,6 +39,9 @@ public class HarukaBotPlugin extends BotPlugin {
 
     @Resource
     private HarukaSchedulingService harukaSchedulingService;
+
+    @Resource
+    private HarukaAuthorizeService harukaAuthorizeService;
 
     @Autowired
     BotContainer botInf;
@@ -688,6 +694,48 @@ public class HarukaBotPlugin extends BotPlugin {
             }
         }
 
+        if(msg.startsWith("#查看授权")){
+            StringBuilder builder=new StringBuilder("目前刊物授权如下：");
+            AtomicInteger count= new AtomicInteger(1);
+            harukaAuthorizeService.list().stream().forEach(item->{
+                builder.append("\n"+count.intValue()+"."+item.getName());
+                count.getAndIncrement();
+            });
+            cq.sendGroupMsg(groupId, builder.toString(), false);
+            return MESSAGE_IGNORE;
+        }
+
+        if(msg.startsWith("#删除授权")){
+            String delAuthorize=msg.replaceAll("#删除授权","").trim();
+            HarukaAuthorize harukaAuthorize=harukaAuthorizeService.getOne(Wrappers.<HarukaAuthorize>lambdaQuery().eq(HarukaAuthorize::getName,delAuthorize));
+            if(harukaAuthorize!=null){
+                if(harukaAuthorizeService.remove(Wrappers.<HarukaAuthorize>lambdaQuery().eq(HarukaAuthorize::getName,delAuthorize))){
+                    cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("删除授权成功！"), false);
+                }else{
+                    cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("删除失败，请重试！"), false);
+                }
+            }else{
+                cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("没有该授权，请检查后进行删除！"), false);
+            }
+            return MESSAGE_IGNORE;
+        }
+
+        if(msg.startsWith("#添加授权")){
+            String addAuthorize=msg.replaceAll("#添加授权","").trim();
+            HarukaAuthorize harukaAuthorize=harukaAuthorizeService.getOne(Wrappers.<HarukaAuthorize>lambdaQuery().eq(HarukaAuthorize::getName,addAuthorize));
+            if(harukaAuthorize!=null){
+                cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("已有授权，请不要重复添加！"), false);
+            }else{
+                HarukaAuthorize authorize=new HarukaAuthorize();
+                authorize.setName(addAuthorize);
+                if(harukaAuthorizeService.save(authorize)){
+                    cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("添加授权成功！"), false);
+                }else{
+                    cq.sendGroupMsg(groupId, Msg.builder().at(userId).text("添加失败，请重试！"), false);
+                }
+            }
+            return MESSAGE_IGNORE;
+        }
         return MESSAGE_IGNORE;
     }
 
