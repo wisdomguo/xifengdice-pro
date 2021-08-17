@@ -46,7 +46,7 @@ public class HarukaBotPlugin extends BotPlugin {
         HarukaScheduling scheduling=new HarukaScheduling();
         scheduling.setDate(new Date());
         harukaSchedulingService.save(scheduling);
-        botInf.getBots().get(1515044906L).sendGroupMsg(1075109409L, Msg.builder().atAll().text("本周排版表已刷新") , false);
+        botInf.getBots().get(1515044906L).sendGroupMsg(744720458L, Msg.builder().atAll().text("本周排版表已刷新") , false);
     }
 
     /**
@@ -69,7 +69,7 @@ public class HarukaBotPlugin extends BotPlugin {
         //获取发送者的所有信息
         //测试用
 //        if(groupId!=939636498L||!msg.startsWith("#")){
-        if(groupId!=1075109409L||!msg.startsWith("#")){
+        if((groupId!=1075109409L&&groupId!=744720458L)||!msg.startsWith("#")){
             return MESSAGE_IGNORE;
         }
 

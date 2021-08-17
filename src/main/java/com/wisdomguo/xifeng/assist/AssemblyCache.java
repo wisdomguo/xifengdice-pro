@@ -77,63 +77,63 @@ public class AssemblyCache implements ServletContextAware {
     @Override
     public void setServletContext(ServletContext servletContext) {
 
-        //加载黑名单
-        blackListService.list().stream().forEach(item->{
-            blackLists.put(item.getId(),item);
-        });
-
-        //加载群设置
-        qqGroupSerivce.list().stream().forEach(item->{
-            qqGroups.put(item.getGroupId(),item);
-        });
-
-        //加载星空寻宝背包
-        explorePocketService.list().stream().forEach(item->{
-            explorePockets.put(item.getQqId(),item);
-        });
-
-        //加载种子袋
-        seedBagService.list().stream().forEach(item->{
-            if(seedBags.get(item.getQqId())!=null){
-                seedBags.get(item.getQqId()).add(item);
-            }else{
-                List<SeedBag> list=new ArrayList<>();
-                list.add(item);
-                seedBags.put(item.getQqId(),list);
-            }
-        });
-
-        //加载个人田地
-        plantedFieldService.list().stream().forEach(item->{
-            if(plantedFields.get(item.getQqId())!=null){
-                plantedFields.get(item.getQqId()).add(item);
-            }else{
-                List<PlantedField> list=new ArrayList<>();
-                list.add(item);
-                plantedFields.put(item.getQqId(),list);
-            }
-        });
-
-        //加载作物仓库
-        fruitService.list().stream().forEach(item->{
-            if(fruits.get(item.getQqId())!=null){
-                fruits.get(item.getQqId()).add(item);
-            }else{
-                List<Fruit> list=new ArrayList<>();
-                list.add(item);
-                fruits.put(item.getQqId(),list);
-            }
-        });
-
-        //加载作物类型
-        seedSpeciesService.list().stream().forEach(item->{
-            seedSpeciesMap.put(item.getId(),item);
-        });
-
-        //加载作物类型
-        userInfoService.list().stream().forEach(item->{
-            userInfos.put(item.getQqId(),item);
-        });
+//        //加载黑名单
+//        blackListService.list().stream().forEach(item->{
+//            blackLists.put(item.getId(),item);
+//        });
+//
+//        //加载群设置
+//        qqGroupSerivce.list().stream().forEach(item->{
+//            qqGroups.put(item.getGroupId(),item);
+//        });
+//
+//        //加载星空寻宝背包
+//        explorePocketService.list().stream().forEach(item->{
+//            explorePockets.put(item.getQqId(),item);
+//        });
+//
+//        //加载种子袋
+//        seedBagService.list().stream().forEach(item->{
+//            if(seedBags.get(item.getQqId())!=null){
+//                seedBags.get(item.getQqId()).add(item);
+//            }else{
+//                List<SeedBag> list=new ArrayList<>();
+//                list.add(item);
+//                seedBags.put(item.getQqId(),list);
+//            }
+//        });
+//
+//        //加载个人田地
+//        plantedFieldService.list().stream().forEach(item->{
+//            if(plantedFields.get(item.getQqId())!=null){
+//                plantedFields.get(item.getQqId()).add(item);
+//            }else{
+//                List<PlantedField> list=new ArrayList<>();
+//                list.add(item);
+//                plantedFields.put(item.getQqId(),list);
+//            }
+//        });
+//
+//        //加载作物仓库
+//        fruitService.list().stream().forEach(item->{
+//            if(fruits.get(item.getQqId())!=null){
+//                fruits.get(item.getQqId()).add(item);
+//            }else{
+//                List<Fruit> list=new ArrayList<>();
+//                list.add(item);
+//                fruits.put(item.getQqId(),list);
+//            }
+//        });
+//
+//        //加载作物类型
+//        seedSpeciesService.list().stream().forEach(item->{
+//            seedSpeciesMap.put(item.getId(),item);
+//        });
+//
+//        //加载作物类型
+//        userInfoService.list().stream().forEach(item->{
+//            userInfos.put(item.getQqId(),item);
+//        });
     }
 
 }
